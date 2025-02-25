@@ -6,7 +6,7 @@ import { AlgorithmInfo } from "@/components/algorithm-info"
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-white text-slate-900">
+    <main className="min-h-screen bg-gray-50 text-slate-900">
       <div className="container mx-auto px-4 py-8">
         <header className="mb-8 text-center">
           <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500 mb-2">
@@ -20,9 +20,9 @@ export default function Home() {
           </div>
         </header>
 
-        <Tabs defaultValue="rubiks" className="w-full">
+        <Tabs defaultValue="rubiks" className="w-full h-full">
           <TabsList className="grid w-full grid-cols-3 mb-8">
-            <TabsTrigger value="rubiks" className="text-lg py-3">
+            <TabsTrigger value="rubiks" className="text-lg">
               Rubik's Cube
             </TabsTrigger>
             <TabsTrigger value="slider" className="text-lg py-3">

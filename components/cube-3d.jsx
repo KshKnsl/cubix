@@ -1,18 +1,19 @@
 "use client"
 
 import { useRef } from "react"
-import { Canvas } from "@react-three/fiber"
-import { Box, OrbitControls } from "@react-three/drei"
+import { Canvas, useFrame, useThree } from "@react-three/fiber"
+import { MeshStandardMaterial } from "three"
 
 function CubePiece({ position, colors }) {
   const mesh = useRef()
 
   return (
-    <Box ref={mesh} args={[0.95, 0.95, 0.95]} position={position}>
+    <mesh ref={mesh} position={position}>
+      <boxGeometry args={[0.95, 0.95, 0.95]} />
       {[...Array(6)].map((_, index) => (
         <meshStandardMaterial key={index} attach={`material-${index}`} color={colors[index] || "#333333"} />
       ))}
-    </Box>
+    </mesh>
   )
 }
 
@@ -54,14 +55,15 @@ function CubeModel() {
   return <group>{pieces}</group>
 }
 
+import { OrbitControls } from "@react-three/drei"
+
 export function Cube3D() {
   return (
     <Canvas camera={{ position: [3, 3, 3], fov: 50 }}>
       <ambientLight intensity={0.5} />
       <pointLight position={[10, 10, 10]} intensity={1} />
       <CubeModel />
-      <OrbitControls enablePan={false} />
+      <OrbitControls />
     </Canvas>
   )
 }
-
