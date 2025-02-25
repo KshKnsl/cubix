@@ -1,101 +1,95 @@
-import Image from "next/image";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import RubiksCube from "@/components/rubiks-cube"
+import NumberSlider from "@/components/number-slider"
+import Sudoku from "@/components/sudoku"
+import { AlgorithmInfo } from "@/components/algorithm-info"
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <main className="min-h-screen bg-white text-slate-900">
+      <div className="container mx-auto px-4 py-8">
+        <header className="mb-8 text-center">
+          <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500 mb-2">
+            Cubix
+          </h1>
+          <p className="text-xl text-slate-600">Advanced Puzzle Solving Tool</p>
+          <div className="flex justify-center gap-4 mt-4">
+            <div className="text-sm text-slate-500">Arpit Varshney (23103299)</div>
+            <div className="text-sm text-slate-500">Kush Kansal (23103278)</div>
+            <div className="text-sm text-slate-500">Prakhar Singhal (23103303)</div>
+          </div>
+        </header>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+        <Tabs defaultValue="rubiks" className="w-full">
+          <TabsList className="grid w-full grid-cols-3 mb-8">
+            <TabsTrigger value="rubiks" className="text-lg py-3">
+              Rubik's Cube
+            </TabsTrigger>
+            <TabsTrigger value="slider" className="text-lg py-3">
+              Number Slider
+            </TabsTrigger>
+            <TabsTrigger value="sudoku" className="text-lg py-3">
+              Sudoku
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="rubiks" className="mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <RubiksCube />
+              <AlgorithmInfo
+                title="Kociemba's Algorithm"
+                description="A two-phase approach for solving the Rubik's Cube efficiently. Phase 1 reduces the cube to a subgroup where only specific moves are needed, while Phase 2 solves the reduced state."
+                complexity="Time Complexity: O(n²)"
+                steps={[
+                  "Orient the edges",
+                  "Orient the corners",
+                  "Place the edges of the middle layer",
+                  "Solve the remaining pieces",
+                ]}
+                visualization="/kociemba-algorithm.svg"
+              />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="slider" className="mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <NumberSlider />
+              <AlgorithmInfo
+                title="A* Search Algorithm"
+                description="A* is an informed search algorithm that finds the shortest path from a start state to a goal state. It uses a heuristic function (Manhattan Distance) to guide the search."
+                complexity="Time Complexity: O(b^d) where b is the branching factor and d is the depth"
+                steps={[
+                  "Calculate f(n) = g(n) + h(n) for each state",
+                  "Explore states with lowest f(n) first",
+                  "Use Manhattan Distance as heuristic",
+                  "Reconstruct path once goal is found",
+                ]}
+                visualization="/astar-algorithm.svg"
+              />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="sudoku" className="mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <Sudoku />
+              <AlgorithmInfo
+                title="Backtracking with Constraint Propagation"
+                description="A recursive algorithm that tries different values for empty cells, backtracking when a contradiction is found. Constraint propagation reduces the search space."
+                complexity="Time Complexity: O(9^m) where m is the number of empty cells"
+                steps={[
+                  "Find an empty cell",
+                  "Try digits 1-9 for the cell",
+                  "Check if digit is valid in current position",
+                  "If valid, recursively try to fill next cell",
+                  "If not valid or no solution found, backtrack",
+                ]}
+                visualization="/backtracking-algorithm.svg"
+              />
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </main>
+  )
 }
+
