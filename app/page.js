@@ -1,57 +1,81 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import RubiksCube from "@/components/rubiks-cube"
-import NumberSlider from "@/components/number-slider"
-import Sudoku from "@/components/sudoku"
-import { AlgorithmInfo } from "@/components/algorithm-info"
-import { Trophy, Brain, Clock } from "lucide-react"
+'use client'
+import { useState, useEffect } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import RubiksCube from "@/components/rubiks-cube";
+import NumberSlider from "@/components/number-slider";
+import Sudoku from "@/components/sudoku";
+import { AlgorithmInfo } from "@/components/algorithm-info";
+import { Trophy, Brain, Clock, Sun, Moon } from "lucide-react";
 
 export default function Home() {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  const toggleTheme = () => {
+    setIsDarkMode(!isDarkMode);
+    // Apply dark mode class to document
+    document.documentElement.classList.toggle('dark', isDarkMode);
+  };
+
+  useEffect(() => {
+    // Apply initial theme based on system preference
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setIsDarkMode(prefersDark);
+    document.documentElement.classList.toggle('dark', prefersDark);
+  }, []);
+
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-white">
+    <main className={`min-h-screen bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-200`}>
       <div className="container mx-auto px-4 py-8">
         <header className="mb-8 text-center">
-          <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600 mb-2">
+          <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-emerald-600 dark:from-green-400 dark:to-emerald-500 mb-2">
             Cubix Solver
           </h1>
-          <p className="text-xl text-slate-300">Master Algorithmic Puzzle Solving</p>
+          <p className="text-xl text-emerald-700 dark:text-emerald-400">Master Algorithmic Puzzle Solving</p>
 
           <div className="flex justify-center gap-6 mt-6">
             <div className="flex flex-col items-center">
-              <Trophy className="h-6 w-6 text-yellow-400 mb-1" />
-              <span className="text-sm text-slate-300">Earn Points</span>
+              <Trophy className="h-6 w-6 text-amber-500 dark:text-amber-400 mb-1" />
+              <span className="text-sm text-gray-700 dark:text-gray-300">Earn Points</span>
             </div>
             <div className="flex flex-col items-center">
-              <Brain className="h-6 w-6 text-blue-400 mb-1" />
-              <span className="text-sm text-slate-300">Learn Algorithms</span>
+              <Brain className="h-6 w-6 text-emerald-600 dark:text-emerald-400 mb-1" />
+              <span className="text-sm text-gray-700 dark:text-gray-300">Learn Algorithms</span>
             </div>
             <div className="flex flex-col items-center">
-              <Clock className="h-6 w-6 text-green-400 mb-1" />
-              <span className="text-sm text-slate-300">Beat the Clock</span>
+              <Clock className="h-6 w-6 text-green-600 dark:text-green-400 mb-1" />
+              <span className="text-sm text-gray-700 dark:text-gray-300">Beat the Clock</span>
             </div>
           </div>
         </header>
 
+        <button
+          onClick={toggleTheme}
+          className="absolute top-4 right-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-green-600 dark:text-emerald-400 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+        >
+          {isDarkMode ? <Sun className="h-6 w-6" /> : <Moon className="h-6 w-6" />}
+        </button>
+
         <Tabs defaultValue="rubiks" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8">
-            <TabsTrigger value="rubiks" className="text-lg py-4 flex flex-col items-center gap-2">
+          <TabsList className="grid w-full grid-cols-3 mb-8 bg-emerald-50 dark:bg-emerald-900/20">
+            <TabsTrigger value="rubiks" className="text-lg py-4 flex flex-col items-center gap-2 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800 data-[state=active]:text-emerald-700 dark:data-[state=active]:text-emerald-400">
               <div className="w-6 h-6 bg-gradient-to-br from-red-500 to-blue-500 rounded-sm"></div>
               Rubik's Cube
             </TabsTrigger>
-            <TabsTrigger value="slider" className="text-lg py-4 flex flex-col items-center gap-2">
+            <TabsTrigger value="slider" className="text-lg py-4 flex flex-col items-center gap-2 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800 data-[state=active]:text-emerald-700 dark:data-[state=active]:text-emerald-400">
               <div className="w-6 h-6 bg-gradient-to-br from-amber-600 to-amber-800 rounded-sm"></div>
               Number Slider
             </TabsTrigger>
-            <TabsTrigger value="sudoku" className="text-lg py-4 flex flex-col items-center gap-2">
+            <TabsTrigger value="sudoku" className="text-lg py-4 flex flex-col items-center gap-2 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800 data-[state=active]:text-emerald-700 dark:data-[state=active]:text-emerald-400">
               <div className="w-6 h-6 grid grid-cols-3 grid-rows-3 gap-0.5">
                 {[...Array(9)].map((_, i) => (
-                  <div key={i} className={`${i % 2 === 0 ? "bg-emerald-500" : "bg-purple-500"} rounded-sm`}></div>
+                  <div key={i} className={`${i % 2 === 0 ? "bg-emerald-500" : "bg-green-600"} rounded-sm`}></div>
                 ))}
               </div>
               Sudoku
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="rubiks" className="mt-6">
+          <TabsContent value="rubiks" className="mt-6 bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg border border-emerald-100 dark:border-emerald-900/30">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <RubiksCube />
               <AlgorithmInfo
@@ -69,7 +93,7 @@ export default function Home() {
             </div>
           </TabsContent>
 
-          <TabsContent value="slider" className="mt-6">
+          <TabsContent value="slider" className="mt-6 bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg border border-emerald-100 dark:border-emerald-900/30">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <NumberSlider />
               <AlgorithmInfo
@@ -87,7 +111,7 @@ export default function Home() {
             </div>
           </TabsContent>
 
-          <TabsContent value="sudoku" className="mt-6">
+          <TabsContent value="sudoku" className="mt-6 bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg border border-emerald-100 dark:border-emerald-900/30">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <Sudoku />
               <AlgorithmInfo
@@ -108,6 +132,5 @@ export default function Home() {
         </Tabs>
       </div>
     </main>
-  )
+  );
 }
-

@@ -7,21 +7,21 @@ import { Info, ListChecks, Eye, Award } from "lucide-react"
 
 export function AlgorithmInfo({ title, description, complexity, steps, visualization }) {
   return (
-    <Card className="bg-slate-800 border-slate-700 overflow-hidden">
-      <CardHeader className="bg-slate-700 border-b border-slate-600">
+    <Card className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 overflow-hidden">
+      <CardHeader className="bg-gray-100 dark:bg-slate-700 border-b border-gray-200 dark:border-slate-600">
         <div className="flex justify-between items-start">
           <div>
-            <CardTitle className="text-2xl text-blue-400">{title}</CardTitle>
-            <CardDescription className="text-slate-300">{complexity}</CardDescription>
+            <CardTitle className="text-2xl text-emerald-600 dark:text-blue-400">{title}</CardTitle>
+            <CardDescription className="text-gray-600 dark:text-slate-300">{complexity}</CardDescription>
           </div>
-          <Badge variant="outline" className="bg-emerald-900/30 text-blue-300 border-blue-700">
+          <Badge variant="outline" className="bg-emerald-100/50 dark:bg-emerald-900/30 text-emerald-700 dark:text-blue-300 border-emerald-300 dark:border-blue-700">
             Algorithm
           </Badge>
         </div>
       </CardHeader>
       <CardContent className="p-0">
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 bg-slate-700">
+          <TabsList className="grid w-full grid-cols-4 bg-gray-100 dark:bg-slate-700">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <Info className="h-4 w-4" />
               Overview
@@ -41,11 +41,11 @@ export function AlgorithmInfo({ title, description, complexity, steps, visualiza
           </TabsList>
 
           <TabsContent value="overview" className="p-6">
-            <p className="text-slate-300 leading-relaxed">{description}</p>
+            <p className="text-gray-700 dark:text-slate-300 leading-relaxed">{description}</p>
           </TabsContent>
 
           <TabsContent value="steps" className="p-6">
-            <ol className="list-decimal pl-5 space-y-2 text-slate-300">
+            <ol className="list-decimal pl-5 space-y-2 text-gray-700 dark:text-slate-300">
               {steps.map((step, index) => (
                 <li key={index} className="pl-2">
                   {step}
@@ -69,39 +69,39 @@ export function AlgorithmInfo({ title, description, complexity, steps, visualiza
             <div className="space-y-6">
               <div>
                 <div className="flex justify-between mb-2">
-                  <span className="text-slate-300">Algorithm Understanding</span>
-                  <span className="text-blue-400">65%</span>
+                  <span className="text-gray-700 dark:text-slate-300">Algorithm Understanding</span>
+                  <span className="text-emerald-600 dark:text-blue-400">65%</span>
                 </div>
-                <Progress value={65} className="h-2 bg-slate-700" indicatorClassName="bg-emerald-500" />
+                <Progress value={65} className="h-2 bg-gray-200 dark:bg-slate-700" indicatorClassName="bg-emerald-500" />
               </div>
 
               <div>
                 <div className="flex justify-between mb-2">
-                  <span className="text-slate-300">Solving Speed</span>
-                  <span className="text-blue-400">42%</span>
+                  <span className="text-gray-700 dark:text-slate-300">Solving Speed</span>
+                  <span className="text-emerald-600 dark:text-blue-400">42%</span>
                 </div>
-                <Progress value={42} className="h-2 bg-slate-700" indicatorClassName="bg-emerald-500" />
+                <Progress value={42} className="h-2 bg-gray-200 dark:bg-slate-700" indicatorClassName="bg-emerald-500" />
               </div>
 
               <div>
                 <div className="flex justify-between mb-2">
-                  <span className="text-slate-300">Optimization Skills</span>
-                  <span className="text-blue-400">78%</span>
+                  <span className="text-gray-700 dark:text-slate-300">Optimization Skills</span>
+                  <span className="text-emerald-600 dark:text-blue-400">78%</span>
                 </div>
-                <Progress value={78} className="h-2 bg-slate-700" indicatorClassName="bg-emerald-500" />
+                <Progress value={78} className="h-2 bg-gray-200 dark:bg-slate-700" indicatorClassName="bg-emerald-500" />
               </div>
 
               <div className="flex gap-2 mt-4">
-                <Badge variant="outline" className="bg-slate-700 text-slate-300 border-slate-600">
+                <Badge variant="outline" className="bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 border-gray-300 dark:border-slate-600">
                   Beginner
                 </Badge>
-                <Badge variant="outline" className="bg-emerald-900/30 text-blue-300 border-blue-700">
+                <Badge variant="outline" className="bg-emerald-100/50 dark:bg-emerald-900/30 text-emerald-700 dark:text-blue-300 border-emerald-300 dark:border-blue-700">
                   Intermediate
                 </Badge>
-                <Badge variant="outline" className="bg-slate-700 text-slate-300 border-slate-600">
+                <Badge variant="outline" className="bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 border-gray-300 dark:border-slate-600">
                   Advanced
                 </Badge>
-                <Badge variant="outline" className="bg-slate-700 text-slate-300 border-slate-600">
+                <Badge variant="outline" className="bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 border-gray-300 dark:border-slate-600">
                   Expert
                 </Badge>
               </div>
@@ -112,4 +112,3 @@ export function AlgorithmInfo({ title, description, complexity, steps, visualiza
     </Card>
   )
 }
-
