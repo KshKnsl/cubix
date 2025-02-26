@@ -3,32 +3,50 @@ import RubiksCube from "@/components/rubiks-cube"
 import NumberSlider from "@/components/number-slider"
 import Sudoku from "@/components/sudoku"
 import { AlgorithmInfo } from "@/components/algorithm-info"
+import { Trophy, Brain, Clock } from "lucide-react"
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gray-50 text-slate-900">
+    <main className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-white">
       <div className="container mx-auto px-4 py-8">
         <header className="mb-8 text-center">
-          <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500 mb-2">
-            Cubix
+          <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600 mb-2">
+            Cubix Solver
           </h1>
-          <p className="text-xl text-slate-600">Advanced Puzzle Solving Tool</p>
-          <div className="flex justify-center gap-4 mt-4">
-            <div className="text-sm text-slate-500">Arpit Varshney (23103299)</div>
-            <div className="text-sm text-slate-500">Kush Kansal (23103278)</div>
-            <div className="text-sm text-slate-500">Prakhar Singhal (23103303)</div>
+          <p className="text-xl text-slate-300">Master Algorithmic Puzzle Solving</p>
+
+          <div className="flex justify-center gap-6 mt-6">
+            <div className="flex flex-col items-center">
+              <Trophy className="h-6 w-6 text-yellow-400 mb-1" />
+              <span className="text-sm text-slate-300">Earn Points</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <Brain className="h-6 w-6 text-blue-400 mb-1" />
+              <span className="text-sm text-slate-300">Learn Algorithms</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <Clock className="h-6 w-6 text-green-400 mb-1" />
+              <span className="text-sm text-slate-300">Beat the Clock</span>
+            </div>
           </div>
         </header>
 
-        <Tabs defaultValue="rubiks" className="w-full h-full">
+        <Tabs defaultValue="rubiks" className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-8">
-            <TabsTrigger value="rubiks" className="text-lg">
+            <TabsTrigger value="rubiks" className="text-lg py-4 flex flex-col items-center gap-2">
+              <div className="w-6 h-6 bg-gradient-to-br from-red-500 to-blue-500 rounded-sm"></div>
               Rubik's Cube
             </TabsTrigger>
-            <TabsTrigger value="slider" className="text-lg py-3">
+            <TabsTrigger value="slider" className="text-lg py-4 flex flex-col items-center gap-2">
+              <div className="w-6 h-6 bg-gradient-to-br from-amber-600 to-amber-800 rounded-sm"></div>
               Number Slider
             </TabsTrigger>
-            <TabsTrigger value="sudoku" className="text-lg py-3">
+            <TabsTrigger value="sudoku" className="text-lg py-4 flex flex-col items-center gap-2">
+              <div className="w-6 h-6 grid grid-cols-3 grid-rows-3 gap-0.5">
+                {[...Array(9)].map((_, i) => (
+                  <div key={i} className={`${i % 2 === 0 ? "bg-emerald-500" : "bg-purple-500"} rounded-sm`}></div>
+                ))}
+              </div>
               Sudoku
             </TabsTrigger>
           </TabsList>
