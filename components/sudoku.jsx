@@ -8,8 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Progress } from "@/components/ui/progress"
 import { SolutionSteps } from "@/components/solution-steps"
-import { Sparkles, RotateCcw, Timer, Trophy } from "lucide-react"
-import { motion } from "motion/react"
+import { Sparkles, RotateCcw, Timer, Trophy, Grid3x3 } from "lucide-react"
 
 export default function Sudoku() {
   const [isSolving, setIsSolving] = useState(false)
@@ -30,7 +29,7 @@ export default function Sudoku() {
       const interval = setInterval(() => {
         setTimeElapsed((prev) => prev + 1)
         setProgress((prev) => {
-          const newProgress = prev + 100 / 25 // Assuming 25 seconds to solve
+          const newProgress = prev + 100 / 25
           return Math.min(newProgress, 100)
         })
       }, 1000)
@@ -49,14 +48,12 @@ export default function Sudoku() {
     setTimeElapsed(0)
     setProgress(0)
 
-    // Simulate solving process
     setTimeout(() => {
       setIsSolving(false)
       setIsSolved(true)
       setSolveTime(timeElapsed)
       setPoints((prev) => prev + Math.floor(100 - timeElapsed * 2) + 50)
 
-      // Example solved board
       const solvedBoard = [
         ["5", "3", "4", "6", "7", "8", "9", "1", "2"],
         ["6", "7", "2", "1", "9", "5", "3", "4", "8"],
@@ -86,7 +83,6 @@ export default function Sudoku() {
   const handleCellChange = (row, col, value) => {
     if (isSolving) return
 
-    // Only allow numbers 1-9 or empty
     if (!/^[1-9]?$/.test(value)) return
 
     const newBoard = [...board.map((row) => [...row])]
@@ -95,127 +91,102 @@ export default function Sudoku() {
   }
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
-      <Card className="bg-slate-800 border-slate-700 overflow-hidden">
-        <CardHeader className="bg-slate-700 border-b border-slate-600">
-          <div className="flex justify-between items-start">
-            <div>
-              <CardTitle className="text-2xl text-purple-400 flex items-center gap-2">
-                <div className="w-6 h-6 grid grid-cols-3 grid-rows-3 gap-0.5">
-                  {[...Array(9)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      className={`${i % 2 === 0 ? "bg-emerald-500" : "bg-purple-500"} rounded-sm`}
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: i * 0.1 }}
-                    ></motion.div>
-                  ))}
-                </div>
-                Sudoku Challenge
-              </CardTitle>
-              <CardDescription className="text-slate-300">Solve using Backtracking Algorithm</CardDescription>
-            </div>
-            <Badge
-              variant="outline"
-              className="bg-purple-900/30 text-purple-300 border-purple-700 flex items-center gap-1"
-            >
-              <Trophy className="h-3 w-3" />
-              {points} pts
-            </Badge>
+    <Card className="theme-transition">
+      <CardHeader>
+        <div className="flex justify-between items-start">
+          <div className="space-y-1">
+            <CardTitle className="text-2xl flex items-center gap-2">
+              <div className="p-2 rounded-md bg-gradient-to-br from-primary to-primary/60">
+                <Grid3x3 className="h-5 w-5 text-primary-foreground" />
+              </div>
+              <span>Sudoku</span>
+            </CardTitle>
+            <CardDescription>Solve using Backtracking Algorithm</CardDescription>
           </div>
-        </CardHeader>
-
-        <div className="px-6 pt-4 pb-2 bg-slate-800">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <Timer className="h-4 w-4 text-slate-400" />
-              <span className="text-slate-300 text-sm">
-                {isSolving ? `Solving: ${timeElapsed}s` : isSolved ? `Solved in: ${solveTime}s` : "Ready to solve"}
-              </span>
-            </div>
-            <Progress value={progress} className="w-1/2 h-2 bg-slate-700" indicatorClassName="bg-purple-500" />
-          </div>
+          <Badge variant="default" className="bg-primary/20 text-primary hover:bg-primary/30 gap-1">
+            <Trophy className="h-3.5 w-3.5" />
+            {points} pts
+          </Badge>
         </div>
+      </CardHeader>
 
-        <CardContent className="p-6">
-          <Tabs defaultValue="puzzle" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="puzzle">Puzzle</TabsTrigger>
-              <TabsTrigger value="solution" disabled={!isSolved}>
-                Solution
-              </TabsTrigger>
-            </TabsList>
+      <div className="px-6 pt-2 pb-4">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <Timer className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">
+              {isSolving ? `Solving: ${timeElapsed}s` : isSolved ? `Solved in: ${solveTime}s` : "Ready to solve"}
+            </span>
+          </div>
+          <Progress value={progress} className="w-1/2" />
+        </div>
+      </div>
 
-            <TabsContent value="puzzle" className="mt-4">
-              <motion.div
-                className="grid grid-cols-9 gap-0.5 aspect-square w-full max-w-md mx-auto bg-slate-900 rounded-lg p-4 border border-slate-700"
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                {board.flat().map((cell, index) => {
-                  const row = Math.floor(index / 9)
-                  const col = index % 9
-                  const boxRow = Math.floor(row / 3)
-                  const boxCol = Math.floor(col / 3)
-                  const isEvenBox = (boxRow + boxCol) % 2 === 0
+      <CardContent>
+        <Tabs defaultValue="puzzle" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="puzzle">Puzzle</TabsTrigger>
+            <TabsTrigger value="solution" disabled={!isSolved}>
+              Solution
+            </TabsTrigger>
+          </TabsList>
 
-                  return (
-                    <Input
-                      key={index}
-                      type="text"
-                      value={cell}
-                      onChange={(e) => handleCellChange(row, col, e.target.value)}
-                      className={`
-                        p-0 text-center aspect-square text-lg font-medium
-                        ${isEvenBox ? "bg-slate-700" : "bg-slate-600"}
-                        ${row === 2 || row === 5 ? "border-b-2 border-purple-500" : ""}
-                        ${col === 2 || col === 5 ? "border-r-2 border-purple-500" : ""}
-                        focus:ring-purple-500 focus:border-purple-500
-                      `}
-                      maxLength={1}
-                      readOnly={isSolving}
-                    />
-                  )
-                })}
-              </motion.div>
-            </TabsContent>
+          <TabsContent value="puzzle" className="mt-4">
+            <div className="grid grid-cols-9 gap-px aspect-square w-full max-w-md mx-auto bg-muted/30 rounded-lg p-4 border theme-transition">
+              {board.flat().map((cell, index) => {
+                const row = Math.floor(index / 9)
+                const col = index % 9
+                const boxRow = Math.floor(row / 3)
+                const boxCol = Math.floor(col / 3)
+                const isEvenBox = (boxRow + boxCol) % 2 === 0
 
-            <TabsContent value="solution" className="mt-4">
-              <SolutionSteps
-                steps={[
-                  "Apply constraint propagation to reduce possibilities",
-                  "Start backtracking from top-left cell",
-                  "Try values 1-9 for each empty cell",
-                  "Check row, column, and 3x3 box constraints",
-                  "Backtrack when contradictions are found",
-                ]}
-                theme="purple"
-              />
-            </TabsContent>
-          </Tabs>
-        </CardContent>
+                return (
+                  <Input
+                    key={index}
+                    type="text"
+                    value={cell}
+                    onChange={(e) => handleCellChange(row, col, e.target.value)}
+                    className={`
+                      p-0 text-center aspect-square text-lg font-medium
+                      ${isEvenBox ? "bg-primary/5" : "bg-primary/10"}
+                      ${row === 2 || row === 5 ? "border-b-2 border-primary/30" : ""}
+                      ${col === 2 || col === 5 ? "border-r-2 border-primary/30" : ""}
+                      focus:ring-primary/30 focus:border-primary/30
+                      transition-colors
+                    `}
+                    maxLength={1}
+                    readOnly={isSolving}
+                  />
+                )
+              })}
+            </div>
+          </TabsContent>
 
-        <CardFooter className="flex justify-between bg-slate-700 border-t border-slate-600 p-4">
-          <Button
-            variant="outline"
-            onClick={handleReset}
-            className="bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
-          >
-            <RotateCcw className="h-4 w-4 mr-2" />
-            Reset
-          </Button>
-          <Button
-            onClick={handleSolve}
-            disabled={isSolving || isSolved}
-            className="bg-purple-600 hover:bg-purple-700 text-white"
-          >
-            <Sparkles className="h-4 w-4 mr-2" />
-            {isSolving ? "Solving..." : isSolved ? "Solved!" : "Solve"}
-          </Button>
-        </CardFooter>
-      </Card>
-    </motion.div>
+          <TabsContent value="solution" className="mt-4 animate-slide-in">
+            <SolutionSteps
+              steps={[
+                "Apply constraint propagation to reduce possibilities",
+                "Start backtracking from top-left cell",
+                "Try values 1-9 for each empty cell",
+                "Check row, column, and 3x3 box constraints",
+                "Backtrack when contradictions are found",
+              ]}
+            />
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+
+      <CardFooter className="flex justify-between gap-2">
+        <Button variant="outline" onClick={handleReset}>
+          <RotateCcw className="h-4 w-4 mr-2" />
+          Reset
+        </Button>
+        <Button onClick={handleSolve} disabled={isSolving || isSolved} className="bg-primary hover:bg-primary/90">
+          <Sparkles className="h-4 w-4 mr-2" />
+          {isSolving ? "Solving..." : isSolved ? "Solved!" : "Solve"}
+        </Button>
+      </CardFooter>
+    </Card>
   )
 }
+

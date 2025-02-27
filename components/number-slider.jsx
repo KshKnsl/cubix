@@ -1,14 +1,13 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 import { SolutionSteps } from "@/components/solution-steps"
-import { Sparkles, RotateCcw, Timer, Trophy, Shuffle } from "lucide-react"
+import { Sparkles, RotateCcw, Timer, Trophy, Shuffle, Grid2x2 } from "lucide-react"
 
 export default function NumberSlider() {
   const [isSolving, setIsSolving] = useState(false)
@@ -30,7 +29,7 @@ export default function NumberSlider() {
       const interval = setInterval(() => {
         setTimeElapsed((prev) => prev + 1)
         setProgress((prev) => {
-          const newProgress = prev + 100 / 15 // Assuming 15 seconds to solve
+          const newProgress = prev + 100 / 15
           return Math.min(newProgress, 100)
         })
       }, 1000)
@@ -49,7 +48,6 @@ export default function NumberSlider() {
     setTimeElapsed(0)
     setProgress(0)
 
-    // Simulate solving process
     setTimeout(() => {
       setIsSolving(false)
       setIsSolved(true)
@@ -71,7 +69,6 @@ export default function NumberSlider() {
   }
 
   const handleShuffle = () => {
-    // Simple shuffle for demonstration
     setBoard([
       [5, 1, 2, 4],
       [9, 6, 3, 8],
@@ -88,7 +85,6 @@ export default function NumberSlider() {
 
     const [emptyRow, emptyCol] = emptyPos
 
-    // Check if the clicked tile is adjacent to the empty tile
     if ((Math.abs(row - emptyRow) === 1 && col === emptyCol) || (Math.abs(col - emptyCol) === 1 && row === emptyRow)) {
       const newBoard = [...board.map((row) => [...row])]
       newBoard[emptyRow][emptyCol] = board[row][col]
@@ -108,54 +104,55 @@ export default function NumberSlider() {
     return null
   }
 
-  // Wooden tile styles
   const getTileStyle = (tile) => {
-    if (tile === 0) return "bg-amber-900/20 border-2 border-dashed border-amber-800/30"
+    if (tile === 0) return "bg-muted/20"
 
     return `
-      bg-gradient-to-br from-amber-600 to-amber-800 
-      text-amber-100 
-      shadow-md 
-      border-2 border-amber-700
-      hover:from-amber-700 hover:to-amber-900
+      bg-gradient-to-br from-primary/20 to-primary/10
+      hover:from-primary/30 hover:to-primary/20
+      text-primary
+      shadow-sm
+      border border-primary/20
       cursor-pointer
-      relative
-      overflow-hidden
-      before:content-[''] before:absolute before:inset-0 before:bg-[url('/wood-grain.png')] before:opacity-30 before:bg-cover
+      transition-all
+      hover:scale-105
+      active:scale-95
     `
   }
 
   return (
-    <Card className="bg-slate-800 border-slate-700 overflow-hidden">
-      <CardHeader className="bg-slate-700 border-b border-slate-600">
+    <Card className="theme-transition">
+      <CardHeader>
         <div className="flex justify-between items-start">
-          <div>
-            <CardTitle className="text-2xl text-amber-400 flex items-center gap-2">
-              <div className="w-6 h-6 bg-gradient-to-br from-amber-600 to-amber-800 rounded-sm"></div>
-              Wooden Slider Puzzle
+          <div className="space-y-1">
+            <CardTitle className="text-2xl flex items-center gap-2">
+              <div className="p-2 rounded-md bg-gradient-to-br from-primary to-primary/60">
+                <Grid2x2 className="h-5 w-5 text-primary-foreground" />
+              </div>
+              <span>Number Slider</span>
             </CardTitle>
-            <CardDescription className="text-slate-300">Solve using A* Search Algorithm</CardDescription>
+            <CardDescription>Solve using A* Search Algorithm</CardDescription>
           </div>
-          <Badge variant="outline" className="bg-amber-900/30 text-amber-300 border-amber-700 flex items-center gap-1">
-            <Trophy className="h-3 w-3" />
+          <Badge variant="default" className="bg-primary/20 text-primary hover:bg-primary/30 gap-1">
+            <Trophy className="h-3.5 w-3.5" />
             {points} pts
           </Badge>
         </div>
       </CardHeader>
 
-      <div className="px-6 pt-4 pb-2 bg-slate-800">
-        <div className="flex items-center justify-between mb-2">
+      <div className="px-6 pt-2 pb-4">
+        <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <Timer className="h-4 w-4 text-slate-400" />
-            <span className="text-slate-300 text-sm">
+            <Timer className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">
               {isSolving ? `Solving: ${timeElapsed}s` : isSolved ? `Solved in: ${solveTime}s` : "Ready to solve"}
             </span>
           </div>
-          <Progress value={progress} className="w-1/2 h-2 bg-slate-700" indicatorClassName="bg-amber-500" />
+          <Progress value={progress} className="w-1/2" />
         </div>
       </div>
 
-      <CardContent className="p-6">
+      <CardContent>
         <Tabs defaultValue="puzzle" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="puzzle">Puzzle</TabsTrigger>
@@ -165,68 +162,46 @@ export default function NumberSlider() {
           </TabsList>
 
           <TabsContent value="puzzle" className="mt-4">
-            <motion.div
-              className="grid grid-cols-4 gap-1 aspect-square w-full max-w-md mx-auto bg-amber-950 rounded-lg p-4 border-4 border-amber-900"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            >
+            <div className="grid grid-cols-4 gap-2 aspect-square w-full max-w-md mx-auto bg-muted/30 rounded-lg p-4 border theme-transition">
               {board.flat().map((tile, index) => {
                 const row = Math.floor(index / 4)
                 const col = index % 4
                 return (
-                  <motion.div
+                  <div
                     key={index}
                     className={`
                       flex items-center justify-center 
-                      text-2xl font-bold rounded-md
+                      text-2xl font-semibold rounded-md
                       ${getTileStyle(tile)}
                       aspect-square
                     `}
                     onClick={() => handleTileClick(row, col)}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
                   >
                     {tile !== 0 && tile}
-                  </motion.div>
+                  </div>
                 )
               })}
-            </motion.div>
+            </div>
           </TabsContent>
 
-          <TabsContent value="solution" className="mt-4">
-            <SolutionSteps
-              steps={["Move 15 right", "Move 14 up", "Move 13 right", "Move 12 up", "Move 11 right"]}
-              theme="amber"
-            />
+          <TabsContent value="solution" className="mt-4 animate-slide-in">
+            <SolutionSteps steps={["Move 15 right", "Move 14 up", "Move 13 right", "Move 12 up", "Move 11 right"]} />
           </TabsContent>
         </Tabs>
       </CardContent>
 
-      <CardFooter className="flex justify-between bg-slate-700 border-t border-slate-600 p-4">
+      <CardFooter className="flex justify-between gap-2">
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={handleReset}
-            className="bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
-          >
+          <Button variant="outline" onClick={handleReset}>
             <RotateCcw className="h-4 w-4 mr-2" />
             Reset
           </Button>
-          <Button
-            variant="outline"
-            onClick={handleShuffle}
-            className="bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
-          >
+          <Button variant="outline" onClick={handleShuffle}>
             <Shuffle className="h-4 w-4 mr-2" />
             Shuffle
           </Button>
         </div>
-        <Button
-          onClick={handleSolve}
-          disabled={isSolving || isSolved}
-          className="bg-amber-600 hover:bg-amber-700 text-white"
-        >
+        <Button onClick={handleSolve} disabled={isSolving || isSolved} className="bg-primary hover:bg-primary/90">
           <Sparkles className="h-4 w-4 mr-2" />
           {isSolving ? "Solving..." : isSolved ? "Solved!" : "Solve"}
         </Button>
@@ -234,3 +209,4 @@ export default function NumberSlider() {
     </Card>
   )
 }
+

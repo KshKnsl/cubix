@@ -8,8 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 import { Cube3D } from "@/components/cube-3d"
 import { SolutionSteps } from "@/components/solution-steps"
-import { Sparkles, RotateCcw, Timer, Trophy } from "lucide-react"
-import { motion } from "framer-motion"
+import { Sparkles, RotateCcw, Timer, Trophy, Dices } from "lucide-react"
 
 export default function RubiksCube() {
   const [isSolving, setIsSolving] = useState(false)
@@ -44,7 +43,6 @@ export default function RubiksCube() {
     setTimeElapsed(0)
     setProgress(0)
 
-    // Simulate solving process
     setTimeout(() => {
       setIsSolving(false)
       setIsSolved(true)
@@ -60,81 +58,69 @@ export default function RubiksCube() {
   }
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
-      <Card className="bg-slate-800 border-slate-700 overflow-hidden">
-        <CardHeader className="bg-slate-700 border-b border-slate-600">
-          <div className="flex justify-between items-start">
-            <div>
-              <CardTitle className="text-2xl text-blue-400 flex items-center gap-2">
-                <div className="w-6 h-6 bg-gradient-to-br from-red-500 to-blue-500 rounded-sm"></div>
-                Rubik's Cube
-              </CardTitle>
-              <CardDescription className="text-slate-300">Solve using Kociemba's Algorithm</CardDescription>
-            </div>
-            <Badge variant="outline" className="bg-emerald-900/30 text-blue-300 border-blue-700 flex items-center gap-1">
-              <Trophy className="h-3 w-3" />
-              {points} pts
-            </Badge>
+    <Card className="theme-transition">
+      <CardHeader>
+        <div className="flex justify-between items-start">
+          <div className="space-y-1">
+            <CardTitle className="text-2xl flex items-center gap-2">
+              <div className="p-2 rounded-md bg-gradient-to-br from-red-500 to-blue-500">
+                <Dices className="h-5 w-5 text-white" />
+              </div>
+              <span>Rubik's Cube</span>
+            </CardTitle>
+            <CardDescription>Solve using Kociemba's Algorithm</CardDescription>
           </div>
-        </CardHeader>
-
-        <div className="px-6 pt-4 pb-2 bg-slate-800">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <Timer className="h-4 w-4 text-slate-400" />
-              <span className="text-slate-300 text-sm">
-                {isSolving ? `Solving: ${timeElapsed}s` : isSolved ? `Solved in: ${solveTime}s` : "Ready to solve"}
-              </span>
-            </div>
-            <Progress value={progress} className="w-1/2 h-2 bg-slate-700" indicatorClassName="bg-emerald-500" />
-          </div>
+          <Badge variant="default" className="bg-primary/20 text-primary hover:bg-primary/30 gap-1">
+            <Trophy className="h-3.5 w-3.5" />
+            {points} pts
+          </Badge>
         </div>
+      </CardHeader>
 
-        <CardContent className="p-6">
-          <Tabs defaultValue="cube" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="cube">Cube</TabsTrigger>
-              <TabsTrigger value="solution" disabled={!isSolved}>
-                Solution
-              </TabsTrigger>
-            </TabsList>
+      <div className="px-6 pt-2 pb-4">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <Timer className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">
+              {isSolving ? `Solving: ${timeElapsed}s` : isSolved ? `Solved in: ${solveTime}s` : "Ready to solve"}
+            </span>
+          </div>
+          <Progress value={progress} className="w-1/2" />
+        </div>
+      </div>
 
-            <TabsContent value="cube" className="mt-4">
-              <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.5 }}
-                className="aspect-square w-full max-w-md mx-auto bg-slate-900/50 rounded-lg p-4 border border-slate-700"
-              >
-                <Cube3D />
-              </motion.div>
-            </TabsContent>
+      <CardContent>
+        <Tabs defaultValue="cube" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="cube">Cube</TabsTrigger>
+            <TabsTrigger value="solution" disabled={!isSolved}>
+              Solution
+            </TabsTrigger>
+          </TabsList>
 
-            <TabsContent value="solution" className="mt-4">
-              <SolutionSteps steps={["R U R' U'", "F R' F' R", "U R U' R'", "R' D' R D"]} />
-            </TabsContent>
-          </Tabs>
-        </CardContent>
+          <TabsContent value="cube" className="mt-4">
+            <div className="aspect-square w-full max-w-md mx-auto bg-muted/30 rounded-lg p-4 border theme-transition">
+              <Cube3D />
+            </div>
+          </TabsContent>
 
-        <CardFooter className="flex justify-between bg-slate-700 border-t border-slate-600 p-4">
-          <Button
-            variant="outline"
-            onClick={handleReset}
-            className="bg-slate-800 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
-          >
-            <RotateCcw className="h-4 w-4 mr-2" />
-            Reset
-          </Button>
-          <Button
-            onClick={handleSolve}
-            disabled={isSolving || isSolved}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white"
-          >
-            <Sparkles className="h-4 w-4 mr-2" />
-            {isSolving ? "Solving..." : isSolved ? "Solved!" : "Solve"}
-          </Button>
-        </CardFooter>
-      </Card>
-    </motion.div>
+          <TabsContent value="solution" className="mt-4 animate-slide-in">
+            <SolutionSteps steps={["R U R' U'", "F R' F' R", "U R U' R'", "R' D' R D"]} />
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+
+      <CardFooter className="flex justify-between gap-2">
+        <Button variant="outline" onClick={handleReset}>
+          <RotateCcw className="h-4 w-4 mr-2" />
+          Reset
+        </Button>
+        <Button onClick={handleSolve} disabled={isSolving || isSolved} className="bg-primary hover:bg-primary/90">
+          <Sparkles className="h-4 w-4 mr-2" />
+          {isSolving ? "Solving..." : isSolved ? "Solved!" : "Solve"}
+        </Button>
+      </CardFooter>
+    </Card>
   )
 }
+

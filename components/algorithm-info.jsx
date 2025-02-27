@@ -3,25 +3,34 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import Image from "next/image"
-import { Info, ListChecks, Eye, Award } from "lucide-react"
+import { Info, ListChecks, Eye, Award, Code2, Zap } from "lucide-react"
 
 export function AlgorithmInfo({ title, description, complexity, steps, visualization }) {
   return (
-    <Card className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 overflow-hidden">
-      <CardHeader className="bg-gray-100 dark:bg-slate-700 border-b border-gray-200 dark:border-slate-600">
+    <Card className="theme-transition h-full">
+      <CardHeader>
         <div className="flex justify-between items-start">
-          <div>
-            <CardTitle className="text-2xl text-emerald-600 dark:text-blue-400">{title}</CardTitle>
-            <CardDescription className="text-gray-600 dark:text-slate-300">{complexity}</CardDescription>
+          <div className="space-y-1">
+            <CardTitle className="text-2xl flex items-center gap-2">
+              <div className="p-2 rounded-md bg-gradient-to-br from-primary to-primary/60">
+                <Code2 className="h-5 w-5 text-primary-foreground" />
+              </div>
+              <span>{title}</span>
+            </CardTitle>
+            <CardDescription className="flex items-center gap-2">
+              <Zap className="h-4 w-4 text-primary" />
+              {complexity}
+            </CardDescription>
           </div>
-          <Badge variant="outline" className="bg-emerald-100/50 dark:bg-emerald-900/30 text-emerald-700 dark:text-blue-300 border-emerald-300 dark:border-blue-700">
+          <Badge variant="default" className="bg-primary/20 text-primary hover:bg-primary/30">
             Algorithm
           </Badge>
         </div>
       </CardHeader>
+
       <CardContent className="p-0">
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 bg-gray-100 dark:bg-slate-700">
+          <TabsList className="w-full grid grid-cols-4">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <Info className="h-4 w-4" />
               Overview
@@ -40,75 +49,92 @@ export function AlgorithmInfo({ title, description, complexity, steps, visualiza
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview" className="p-6">
-            <p className="text-gray-700 dark:text-slate-300 leading-relaxed">{description}</p>
-          </TabsContent>
+          <div className="p-6">
+            <TabsContent value="overview" className="mt-0">
+              <p className="text-muted-foreground leading-relaxed">{description}</p>
+            </TabsContent>
 
-          <TabsContent value="steps" className="p-6">
-            <ol className="list-decimal pl-5 space-y-2 text-gray-700 dark:text-slate-300">
-              {steps.map((step, index) => (
-                <li key={index} className="pl-2">
-                  {step}
-                </li>
-              ))}
-            </ol>
-          </TabsContent>
+            <TabsContent value="steps" className="mt-0">
+              <ol className="space-y-3">
+                {steps.map((step, index) => (
+                  <li
+                    key={index}
+                    className="flex items-center gap-3 animate-slide-in"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary/20 text-primary text-sm font-medium">
+                      {index + 1}
+                    </span>
+                    <span className="text-muted-foreground">{step}</span>
+                  </li>
+                ))}
+              </ol>
+            </TabsContent>
 
-          <TabsContent value="visual" className="p-6 flex justify-center">
-            <div className="relative h-64 w-full">
-              <Image
-                src={visualization || "/placeholder.svg?height=250&width=400"}
-                alt={`${title} visualization`}
-                fill
-                className="object-contain"
-              />
-            </div>
-          </TabsContent>
+            <TabsContent value="visual" className="mt-0">
+              <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-muted/30 border theme-transition">
+                <Image
+                  src={visualization || "/placeholder.svg?height=250&width=400"}
+                  alt={`${title} visualization`}
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            </TabsContent>
 
-          <TabsContent value="mastery" className="p-6">
-            <div className="space-y-6">
-              <div>
-                <div className="flex justify-between mb-2">
-                  <span className="text-gray-700 dark:text-slate-300">Algorithm Understanding</span>
-                  <span className="text-emerald-600 dark:text-blue-400">65%</span>
+            <TabsContent value="mastery" className="mt-0 space-y-6">
+              <div className="space-y-4">
+                <div>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm text-muted-foreground">Algorithm Understanding</span>
+                    <span className="text-sm font-medium text-primary">65%</span>
+                  </div>
+                  <Progress value={65} className="h-2" />
                 </div>
-                <Progress value={65} className="h-2 bg-gray-200 dark:bg-slate-700" indicatorClassName="bg-emerald-500" />
-              </div>
 
-              <div>
-                <div className="flex justify-between mb-2">
-                  <span className="text-gray-700 dark:text-slate-300">Solving Speed</span>
-                  <span className="text-emerald-600 dark:text-blue-400">42%</span>
+                <div>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm text-muted-foreground">Solving Speed</span>
+                    <span className="text-sm font-medium text-primary">42%</span>
+                  </div>
+                  <Progress value={42} className="h-2" />
                 </div>
-                <Progress value={42} className="h-2 bg-gray-200 dark:bg-slate-700" indicatorClassName="bg-emerald-500" />
-              </div>
 
-              <div>
-                <div className="flex justify-between mb-2">
-                  <span className="text-gray-700 dark:text-slate-300">Optimization Skills</span>
-                  <span className="text-emerald-600 dark:text-blue-400">78%</span>
+                <div>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm text-muted-foreground">Optimization Skills</span>
+                    <span className="text-sm font-medium text-primary">78%</span>
+                  </div>
+                  <Progress value={78} className="h-2" />
                 </div>
-                <Progress value={78} className="h-2 bg-gray-200 dark:bg-slate-700" indicatorClassName="bg-emerald-500" />
               </div>
 
-              <div className="flex gap-2 mt-4">
-                <Badge variant="outline" className="bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 border-gray-300 dark:border-slate-600">
-                  Beginner
-                </Badge>
-                <Badge variant="outline" className="bg-emerald-100/50 dark:bg-emerald-900/30 text-emerald-700 dark:text-blue-300 border-emerald-300 dark:border-blue-700">
-                  Intermediate
-                </Badge>
-                <Badge variant="outline" className="bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 border-gray-300 dark:border-slate-600">
-                  Advanced
-                </Badge>
-                <Badge variant="outline" className="bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 border-gray-300 dark:border-slate-600">
-                  Expert
-                </Badge>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-2">
+                  <Badge variant="outline" className="w-full justify-center py-1 font-normal bg-muted/30">
+                    Beginner
+                  </Badge>
+                  <Badge
+                    variant="outline"
+                    className="w-full justify-center py-1 font-normal bg-primary/20 text-primary border-primary/30"
+                  >
+                    Intermediate
+                  </Badge>
+                </div>
+                <div className="space-y-2">
+                  <Badge variant="outline" className="w-full justify-center py-1 font-normal bg-muted/30">
+                    Advanced
+                  </Badge>
+                  <Badge variant="outline" className="w-full justify-center py-1 font-normal bg-muted/30">
+                    Expert
+                  </Badge>
+                </div>
               </div>
-            </div>
-          </TabsContent>
+            </TabsContent>
+          </div>
         </Tabs>
       </CardContent>
     </Card>
   )
 }
+
