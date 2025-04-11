@@ -4,39 +4,39 @@
 #include <sstream>
 #include <random>
 #include <chrono>
+#include <iomanip>
 using namespace std;
 
 class SudokuEngine {
 private:
-    vector<vector<int>> board;
-    vector<vector<int>> solution;
-
-    bool isValid(int row, int col, int num) {
+    bool isValid(const vector<vector<int>>& grid, int row, int col, int num) {
         // Check row
         for(int x = 0; x < 9; x++)
-            if(board[row][x] == num) return false;
+            if(grid[row][x] == num) return false;
         
         // Check column
         for(int x = 0; x < 9; x++)
-            if(board[x][col] == num) return false;
+            if(grid[x][col] == num) return false;
         
         // Check 3x3 box
         int startRow = row - row % 3, startCol = col - col % 3;
         for(int i = 0; i < 3; i++)
             for(int j = 0; j < 3; j++)
-                if(board[i + startRow][j + startCol] == num) return false;
+                if(grid[i + startRow][j + startCol] == num) return false;
         
         return true;
     }
 
-    bool solveSudoku() {
-        int row, col;
+    bool solveSudoku(vector<vector<int>>& grid) {
+        int row = -1, col = -1;
         bool isEmpty = false;
         
         // Find empty cell
-        for(row = 0; row < 9; row++) {
-            for(col = 0; col < 9; col++) {
-                if(board[row][col] == 0) {
+        for(int i = 0; i < 9; i++) {
+            for(int j = 0; j < 9; j++) {
+                if(grid[i][j] == 0) {
+                    row = i;
+                    col = j;
                     isEmpty = true;
                     break;
                 }
@@ -49,149 +49,144 @@ private:
         
         // Try digits 1-9
         for(int num = 1; num <= 9; num++) {
-            if(isValid(row, col, num)) {
-                board[row][col] = num;
-                if(solveSudoku()) return true;
-                board[row][col] = 0;
+            if(isValid(grid, row, col, num)) {
+                grid[row][col] = num;
+                if(solveSudoku(grid)) return true;
+                grid[row][col] = 0;
             }
         }
         return false;
     }
 
-    string getHint(int row, int col) {
-        if(board[row][col] != 0) return "Cell already filled";
-        for(int num = 1; num <= 9; num++) {
-            if(isValid(row, col, num)) {
-                return "Try " + to_string(num);
+    vector<vector<int>> parseBoard(const vector<int>& values) {
+        if (values.size() != 81) {
+            throw runtime_error("Invalid board size");
+        }
+
+        vector<vector<int>> grid(9, vector<int>(9, 0));
+        for(int i = 0; i < 9; i++) {
+            for(int j = 0; j < 9; j++) {
+                int val = values[i * 9 + j];
+                if (val < 0 || val > 9) {
+                    throw runtime_error("Invalid value in board");
+                }
+                grid[i][j] = val;
             }
         }
-        return "No valid moves";
+        return grid;
+    }
+
+    string gridToString(const vector<vector<int>>& grid) {
+        stringstream result;
+        for(int i = 0; i < 9; i++) {
+            for(int j = 0; j < 9; j++) {
+                result << grid[i][j];
+                if(i != 8 || j != 8) result << ",";
+            }
+        }
+        return result.str();
     }
 
 public:
-    SudokuEngine() {
-        board = vector<vector<int>>(9, vector<int>(9, 0));
-        solution = vector<vector<int>>(9, vector<int>(9, 0));
+    string solve(const vector<int>& values) {
+        try {
+            auto grid = parseBoard(values);
+            
+            
+            if(!solveSudoku(grid)) {
+                return "Error: No solution exists";
+            }
+            return gridToString(grid);
+        } catch (const exception& e) {
+            return string("Error: ") + e.what();
+        }
     }
 
-    void setBoard(const string& input) {
-        stringstream ss(input);
-        for(int i = 0; i < 9; i++) {
-            for(int j = 0; j < 9; j++) {
-                int val;
-                ss >> val;
-                board[i][j] = val;
+    string getHint(const vector<int>& values, int row, int col) {
+        try {
+            if(row < 0 || row >= 9 || col < 0 || col >= 9) {
+                return "Error: Invalid position";
             }
+
+            auto grid = parseBoard(values);
+            if(grid[row][col] != 0) {
+                return "Error: Cell already filled";
+            }
+
+            // Get solution
+            auto solution = grid;
+            if(!solveSudoku(solution)) {
+                return "Error: Board has no solution";
+            }
+
+            return to_string(solution[row][col]);
+        } catch (const exception& e) {
+            return string("Error: ") + e.what();
         }
-        // Store solution
-        vector<vector<int>> temp = board;
-        solveSudoku();
-        solution = board;
-        board = temp;
     }
 
-    string solve() {
-        if(!solveSudoku()) return "No solution exists";
-        
-        stringstream result;
-        for(int i = 0; i < 9; i++) {
-            for(int j = 0; j < 9; j++) {
-                result << board[i][j] << " ";
-            }
-        }
-        return result.str();
-    }
-
-    string checkValidity() {
-        // Check rows
-        for(int i = 0; i < 9; i++) {
-            vector<bool> seen(10, false);
-            for(int j = 0; j < 9; j++) {
-                if(board[i][j] != 0) {
-                    if(seen[board[i][j]]) return "Invalid: Row " + to_string(i+1) + " has duplicate";
-                    seen[board[i][j]] = true;
-                }
-            }
-        }
-
-        // Check columns
-        for(int j = 0; j < 9; j++) {
-            vector<bool> seen(10, false);
+    string checkValidity(const vector<int>& values) {
+        try {
+            auto grid = parseBoard(values);
+            
+            // Check each cell
             for(int i = 0; i < 9; i++) {
-                if(board[i][j] != 0) {
-                    if(seen[board[i][j]]) return "Invalid: Column " + to_string(j+1) + " has duplicate";
-                    seen[board[i][j]] = true;
-                }
-            }
-        }
-
-        // Check 3x3 boxes
-        for(int block = 0; block < 9; block++) {
-            vector<bool> seen(10, false);
-            int startRow = (block/3) * 3;
-            int startCol = (block%3) * 3;
-            for(int i = startRow; i < startRow+3; i++) {
-                for(int j = startCol; j < startCol+3; j++) {
-                    if(board[i][j] != 0) {
-                        if(seen[board[i][j]]) return "Invalid: Box at (" + to_string(startRow+1) + "," + to_string(startCol+1) + ") has duplicate";
-                        seen[board[i][j]] = true;
+                for(int j = 0; j < 9; j++) {
+                    if(grid[i][j] != 0) {
+                        int temp = grid[i][j];
+                        grid[i][j] = 0;
+                        if(!isValid(grid, i, j, temp)) {
+                            return "Invalid";
+                        }
+                        grid[i][j] = temp;
                     }
                 }
             }
+            return "Valid";
+        } catch (const exception& e) {
+            return string("Error: ") + e.what();
         }
-        return "Valid";
-    }
-
-    string getHintForCell(const string& input) {
-        stringstream ss(input);
-        int row, col;
-        ss >> row >> col;
-        if(row < 0 || row >= 9 || col < 0 || col >= 9)
-            return "Invalid cell position";
-        return getHint(row, col);
-    }
-
-    string getSolution() {
-        stringstream result;
-        for(int i = 0; i < 9; i++) {
-            for(int j = 0; j < 9; j++) {
-                result << solution[i][j] << " ";
-            }
-        }
-        return result.str();
     }
 };
 
-int main() {
-    SudokuEngine engine;
-    string command;
-    
-    while(getline(cin, command)) {
-        if(command == "exit") break;
-        
-        if(command == "set") {
-            string board;
-            getline(cin, board);
-            engine.setBoard(board);
-            cout << "Board set successfully" << endl;
+int main(int argc, char* argv[]) {
+    if(argc < 83) { // 1 for program name, 1 for command, 81 for board
+        cerr << "Usage: " << argv[0] << " <command> <81 board values> [row col]" << endl;
+        return 1;
+    }
+
+    try {
+        vector<int> board;
+        for(int i = 2; i < 83; i++) {
+            board.push_back(stoi(argv[i]));
         }
-        else if(command == "solve") {
-            cout << engine.solve() << endl;
+
+        SudokuEngine engine;
+        string command = argv[1];
+
+        if(command == "solve") {
+            cout << engine.solve(board) << endl;
         }
         else if(command == "check") {
-            cout << engine.checkValidity() << endl;
+            cout << engine.checkValidity(board) << endl;
         }
         else if(command == "hint") {
-            string pos;
-            getline(cin, pos);
-            cout << engine.getHintForCell(pos) << endl;
-        }
-        else if(command == "solution") {
-            cout << engine.getSolution() << endl;
+            if(argc < 85) {
+                cerr << "Error: Not enough arguments for hint command" << endl;
+                return 1;
+            }
+            int row = stoi(argv[83]);
+            int col = stoi(argv[84]);
+            cout << engine.getHint(board, row, col) << endl;
         }
         else {
-            cout << "Unknown command" << endl;
+            cerr << "Error: Unknown command: " << command << endl;
+            return 1;
         }
+    } catch(const exception& e) {
+        cerr << "Error: " << e.what() << endl;
+        return 1;
     }
+
     return 0;
 }

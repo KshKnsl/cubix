@@ -44,17 +44,11 @@ export default function SudokuPage() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
         <Link href="/games/sudoku/play">
           <Button className="w-full h-32 text-xl gap-4" variant="default">
-            <Play className="h-6 w-6" />
-            Play Game
-          </Button>
-        </Link>
-        <Link href="/games/sudoku/solve">
-          <Button className="w-full h-32 text-xl gap-4" variant="outline">
             <Wand2 className="h-6 w-6" />
-            Solve Puzzle
+            Play and Solve Game
           </Button>
         </Link>
       </div>

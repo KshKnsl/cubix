@@ -1,131 +1,80 @@
-import { exec } from 'child_process';
-import { promises as fs } from 'fs';
-import path from 'path';
-import os from 'os';
-
-async function compileEngine() {
-    const enginePath = path.join(process.cwd(), 'cpp', 'sudoku_engine.cpp');
-    const tempDir = path.join(os.tmpdir(), 'cubix-sudoku');
-    const executablePath = path.join(tempDir, 'sudoku_engine.exe');
-
-    console.log('Compiling engine:', {
-        enginePath,
-        tempDir,
-        executablePath
-    });
-
-    // Create temp directory if it doesn't exist
-    await fs.mkdir(tempDir, { recursive: true });
-
-    // Compile the C++ engine
-    await new Promise((resolve, reject) => {
-        const cmd = `g++ "${enginePath}" -o "${executablePath}"`;
-        console.log('Running compile command:', cmd);
-        
-        exec(cmd, { maxBuffer: 1024 * 1024 }, (error, stdout, stderr) => {
-            if (error || stderr) {
-                console.error('Compilation failed:', {
-                    error: error?.message,
-                    stderr,
-                    stdout
-                });
-                reject(new Error(stderr || error?.message));
-            } else {
-                console.log('Compilation succeeded');
-                resolve(stdout);
-            }
-        });
-    });
-
-    // Verify and set permissions
-    await fs.chmod(executablePath, 0o755);
-    console.log('Set executable permissions');
-    
-    // Verify the file exists and is executable
-    const stats = await fs.stat(executablePath);
-    console.log('Executable stats:', {
-        size: stats.size,
-        mode: stats.mode.toString(8),
-        created: stats.birthtime
-    });
-    
-    return executablePath;
-}
+import { exec } from 'child_process'
+import path from 'path'
+import fs from 'fs/promises'
+import os from 'os'
 
 export default async function handler(req, res) {
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' })
+  }
+
+  try {
+    const { command, args = [] } = req.body
+    if (!command) {
+      return res.status(400).json({ error: 'Command is required' })
     }
 
-    const { args } = req.body;
-    if (!args) {
-        return res.status(400).json({ error: 'Missing args parameter' });
+    // Validate board array length
+    if (command === 'solve' || command === 'check') {
+      if (!Array.isArray(args) || args.length !== 81) {
+        return res.status(400).json({ error: 'Board must be exactly 81 numbers' })
+      }
+    } else if (command === 'hint') {
+      if (!Array.isArray(args) || args.length !== 83) { // 81 board numbers + row + col
+        return res.status(400).json({ error: 'Hint requires 81 board numbers plus row and col' })
+      }
     }
 
+    // Check both possible executable locations
+    const tempDir = path.join(os.tmpdir(), 'cubix-sudoku')
+    const executablePath = path.join(tempDir, 'sudoku_engine.exe')
+    const altExecutablePath = path.join(tempDir, 'sudoku_engine_active.exe')
+    
+    let targetExecutable = executablePath
+    
     try {
-        const executablePath = path.join(os.tmpdir(), 'cubix-sudoku', 'sudoku_engine.exe');
-        
-        // Check if executable exists and is valid
-        let needsRecompile = true;
-        try {
-            const stats = await fs.stat(executablePath);
-            if (stats.size > 0) {
-                console.log('Found existing executable:', {
-                    size: stats.size,
-                    mode: stats.mode.toString(8),
-                    created: stats.birthtime
-                });
-                needsRecompile = false;
-            } else {
-                console.log('Executable exists but is empty');
-            }
-        } catch (error) {
-            console.log('Executable not found:', error.message);
-        }
-
-        if (needsRecompile) {
-            console.log('Recompiling engine...');
-            await compileEngine();
-            console.log('Recompilation complete');
-        }
-        
-        // Execute the engine with provided arguments
-        console.log('Executing command with args:', args);
-        const output = await new Promise((resolve, reject) => {
-            const cmd = `"${executablePath}" ${args.join(' ')}`;
-            console.log('Running command:', cmd);
-            
-            exec(cmd, { maxBuffer: 1024 * 1024 }, (error, stdout, stderr) => {
-                if (error || stderr) {
-                    console.error('Execution failed:', {
-                        error: error?.message,
-                        stderr,
-                        stdout
-                    });
-                    reject({
-                        error: error?.message || 'Execution failed',
-                        stderr: stderr,
-                        stdout: stdout
-                    });
-                } else {
-                    try {
-                        // Parse the output as JSON
-                        const result = JSON.parse(stdout);
-                        resolve(result);
-                    } catch (e) {
-                        // If not JSON, return as raw output
-                        resolve({ output: stdout.trim() });
-                    }
-                }
-            });
-        });
-
-        res.status(200).json(output);
+      await fs.access(executablePath)
     } catch (error) {
-        console.error('Execution error:', error);
-        res.status(500).json({ 
-            error: 'Execution failed',
-            details: error.stderr || error.message
-        });
+      try {
+        await fs.access(altExecutablePath)
+        targetExecutable = altExecutablePath
+      } catch (error) {
+        console.error('No executable found:', error)
+        return res.status(500).json({ error: 'Sudoku engine not found. Please compile first.' })
+      }
     }
+
+    // Format command for PowerShell
+    const cmdArgs = [command, ...args.map(arg => arg.toString())]
+    const cmdLine = `& "${targetExecutable}" ${cmdArgs.join(' ')}`
+    
+    console.log('Executing command:', cmdLine)
+    
+    const output = await new Promise((resolve, reject) => {
+      // Use PowerShell to execute the command
+      exec(cmdLine, {
+        shell: 'powershell.exe',
+        timeout: 10000, // 10 second timeout
+        maxBuffer: 1024 * 1024 // 1MB buffer
+      }, (error, stdout, stderr) => {
+        console.log('Execution result:', { error, stdout, stderr })
+        if (error) {
+          console.error('Execution error:', error)
+          reject(error)
+          return
+        }
+        if (stderr) {
+          console.error('Stderr:', stderr)
+          reject(new Error(stderr))
+          return
+        }
+        resolve(stdout)
+      })
+    })
+
+    return res.status(200).json({ output: output.trim() })
+  } catch (error) {
+    console.error('Handler error:', error)
+    return res.status(500).json({ error: error.message })
+  }
 }

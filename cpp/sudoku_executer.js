@@ -1,7 +1,7 @@
 class SudokuExecuter {
     constructor() {
-        this.initialized = false;
-        this.boardSet = false;
+        this.board = Array(9).fill().map(() => Array(9).fill(''));
+        this.executablePath = null;
     }
 
     async initialize() {
@@ -9,102 +9,80 @@ class SudokuExecuter {
             const response = await fetch('/api/sudoku/compile', {
                 method: 'POST'
             });
-            
+
             if (!response.ok) {
                 const error = await response.json();
-                throw new Error(error.message || 'Failed to compile engine');
+                throw new Error(error.error || 'Failed to compile engine');
             }
-            this.initialized = true;
+
+            const result = await response.json();
+            this.executablePath = result.executablePath;
+            return true;
         } catch (error) {
-            console.error('Failed to initialize Sudoku engine:', error);
+            console.error('Failed to initialize:', error);
             throw error;
         }
     }
 
-    async execute(args) {
-        if (!this.initialized) {
-            await this.initialize();
+    // Convert 2D board to flat array of numbers
+    boardToArray() {
+        return this.board.flat().map(cell => cell === '' ? '0' : cell);
+    }
+
+    async execute(command, args) {
+        if (!this.executablePath) {
+            throw new Error('Engine not initialized');
         }
 
         try {
-            console.log('Executing with args:', args);
             const response = await fetch('/api/sudoku/execute', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ args })
+                body: JSON.stringify({ command, args })
             });
 
             if (!response.ok) {
                 const error = await response.json();
-                throw new Error(error.message || 'Engine execution failed');
+                throw new Error(error.error || 'Command failed');
             }
 
-            const result = await response.json();
-            console.log('Engine response:', result);
-            return result.output || result;
+            const { output } = await response.json();
+            if (output.startsWith('Error:')) {
+                throw new Error(output.substring(7));
+            }
+            return output;
         } catch (error) {
-            console.error('Engine execution failed:', error);
+            console.error('Execute failed:', error);
             throw error;
         }
     }
 
     async setBoard(board) {
-        // Ensure board is a 2D array
-        if (!Array.isArray(board) || !Array.isArray(board[0])) {
-            board = Array.from({ length: 9 }, (_, i) => 
-                board.slice(i * 9, (i + 1) * 9)
-            );
-        }
-
-        // Convert empty strings or null to 0s for the engine
-        const engineBoard = board.map(row => 
-            row.map(cell => {
-                if (cell === '' || cell === null) return 0;
-                const num = parseInt(cell);
-                return isNaN(num) ? 0 : num;
-            })
-        );
-
-        // Flatten and convert to string array for the engine
-        const args = ['set', ...engineBoard.flat().map(String)];
-        await this.execute(args);
-        this.boardSet = true;
+        this.board = board.map(row => [...row]);
         return true;
     }
 
     async solve() {
-        if (!this.boardSet) {
-            throw new Error('Board must be set before solving');
-        }
-        return this.execute(['solve']);
+        const boardArray = this.boardToArray();
+        const result = await this.execute('solve', boardArray);
+        return result.split(',').map(n => n === '0' ? '' : n);
     }
 
-    async checkValidity() {
-        if (!this.boardSet) {
-            throw new Error('Board must be set before checking validity');
-        }
-        return this.execute(['check']);
+    async check() {
+        const boardArray = this.boardToArray();
+        const result = await this.execute('check', boardArray);
+        return result === 'Valid';
     }
 
-    async getHint(row, col) {
-        if (!this.boardSet) {
-            throw new Error('Board must be set before getting hints');
-        }
-        return this.execute(['hint', row.toString(), col.toString()]);
-    }
-
-    async getSolution() {
-        if (!this.boardSet) {
-            throw new Error('Board must be set before getting solution');
-        }
-        return this.execute(['solution']);
-    }
-
-    cleanup() {
-        this.initialized = false;
-        this.boardSet = false;
+    async hint(row, col) {
+        console.log('Hint requested for cell:', row, col);
+        const boardArray = this.boardToArray();
+        const args = [...boardArray, row.toString(), col.toString()];
+        const result = await this.execute('hint', args);
+        const hint = parseInt(result);
+        return isNaN(hint) ? null : hint;
     }
 }
 
