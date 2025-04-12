@@ -75,6 +75,18 @@ jobs:
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Build with Next.js
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
+      - name: Install g++
+        run: |
+          sudo apt update
+          sudo apt install -y g++
+      - name: Compile Sudoku Engine
+        run: |
+          mkdir -p /tmp/cubix-sudoku
+          g++ cpp/sudoku_engine.cpp -o /tmp/cubix-sudoku/sudoku_engine -O2
+      - name: Test Sudoku Engine Execution
+        run: |
+          echo "Testing Sudoku Engine..."
+          /tmp/cubix-sudoku/sudoku_engine solve $(seq -s ' ' 1 81)
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
