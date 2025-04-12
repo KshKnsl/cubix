@@ -6,7 +6,10 @@ class SudokuExecuter {
 
     async initialize() {
         try {
-            const response = await fetch('/api/sudoku/compile', {
+            const baseUrl = process.env.NODE_ENV === 'production' 
+                ? 'https://kushkansal.me/cubix'
+                : '';
+            const response = await fetch(`${baseUrl}/api/sudoku/compile`, {
                 method: 'POST'
             });
 
@@ -31,6 +34,7 @@ class SudokuExecuter {
 
     async execute(command, args) {
         if (!this.executablePath) {
+            console.error('Engine not initialized');
             throw new Error('Engine not initialized');
         }
 

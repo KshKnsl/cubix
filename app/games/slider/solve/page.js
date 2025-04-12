@@ -3,14 +3,16 @@ import Link from 'next/link'
 import NumberSlider from "@/components/number-slider"
 import { AlgorithmInfo } from "@/components/algorithm-info"
 import { Card, CardContent } from "@/components/ui/card"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 export default function SliderSolvePage() {
   return (
     <main className="container mx-auto px-4 py-8">
-      <div className="mb-8">
+      <div className="flex justify-between items-center mb-8">
         <Link href="/games/slider" className="text-muted-foreground hover:text-foreground transition-colors">
           ← Back to Number Slider
         </Link>
+        <ThemeToggle />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

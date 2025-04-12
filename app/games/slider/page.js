@@ -3,14 +3,16 @@ import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Grid2x2, Play, Wand2 } from "lucide-react"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 export default function SliderPage() {
   return (
     <main className="container mx-auto px-4 py-8">
-      <div className="mb-8">
+      <div className="flex justify-between items-center mb-8">
         <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">
           ← Back to Games
         </Link>
+        <ThemeToggle />
       </div>
 
       <Card className="mb-8">

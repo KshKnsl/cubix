@@ -176,6 +176,7 @@ export default function RubiksCube3D() {
               <Button 
                 size="sm"
                 variant="outline"
+                className="border-muted text-foreground hover:bg-muted/10"
                 onClick={() => rotateLayer('x', index, Math.PI / 2)}
               >
                 Row {index} →
@@ -183,6 +184,7 @@ export default function RubiksCube3D() {
               <Button 
                 size="sm"
                 variant="outline"
+                className="border-muted text-foreground hover:bg-muted/10"
                 onClick={() => rotateLayer('x', index, -Math.PI / 2)}
               >
                 Row {index} ←
@@ -198,6 +200,7 @@ export default function RubiksCube3D() {
               <Button 
                 size="sm"
                 variant="outline"
+                className="border-muted text-foreground hover:bg-muted/10"
                 onClick={() => rotateLayer('y', index, Math.PI / 2)}
               >
                 Col {index} ↑
@@ -205,6 +208,7 @@ export default function RubiksCube3D() {
               <Button 
                 size="sm"
                 variant="outline"
+                className="border-muted text-foreground hover:bg-muted/10"
                 onClick={() => rotateLayer('y', index, -Math.PI / 2)}
               >
                 Col {index} ↓
@@ -220,6 +224,7 @@ export default function RubiksCube3D() {
               <Button 
                 size="sm"
                 variant="outline"
+                className="border-muted text-foreground hover:bg-muted/10"
                 onClick={() => rotateLayer('z', index, Math.PI / 2)}
               >
                 Face {index} ↻
@@ -227,6 +232,7 @@ export default function RubiksCube3D() {
               <Button 
                 size="sm"
                 variant="outline"
+                className="border-muted text-foreground hover:bg-muted/10"
                 onClick={() => rotateLayer('z', index, -Math.PI / 2)}
               >
                 Face {index} ↺

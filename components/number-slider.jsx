@@ -105,14 +105,14 @@ export default function NumberSlider() {
   }
 
   const getTileStyle = (tile) => {
-    if (tile === 0) return "bg-muted/20"
+    if (tile === 0) return "bg-muted/30 text-muted-foreground"
 
     return `
-      bg-gradient-to-br from-primary/20 to-primary/10
-      hover:from-primary/30 hover:to-primary/20
-      text-primary
-      shadow-sm
-      border border-primary/20
+      bg-gradient-to-br from-primary/30 to-primary/20
+      hover:from-primary/40 hover:to-primary/30
+      text-primary-foreground
+      shadow-md
+      border border-primary/30
       cursor-pointer
       transition-all
       hover:scale-105
@@ -121,17 +121,17 @@ export default function NumberSlider() {
   }
 
   return (
-    <Card className="theme-transition">
+    <Card className="theme-transition bg-card text-card-foreground">
       <CardHeader>
         <div className="flex justify-between items-start">
           <div className="space-y-1">
             <CardTitle className="text-2xl flex items-center gap-2">
-              <div className="p-2 rounded-md bg-gradient-to-br from-primary to-primary/60">
+              <div className="p-2 rounded-md bg-gradient-to-br from-primary to-primary/60 shadow">
                 <Grid2x2 className="h-5 w-5 text-primary-foreground" />
               </div>
               <span>Number Slider</span>
             </CardTitle>
-            <CardDescription>Solve using A* Search Algorithm</CardDescription>
+            <CardDescription className="text-muted-foreground">Solve using A* Search Algorithm</CardDescription>
           </div>
           <Badge variant="default" className="bg-primary/20 text-primary hover:bg-primary/30 gap-1">
             <Trophy className="h-3.5 w-3.5" />
@@ -148,15 +148,15 @@ export default function NumberSlider() {
               {isSolving ? `Solving: ${timeElapsed}s` : isSolved ? `Solved in: ${solveTime}s` : "Ready to solve"}
             </span>
           </div>
-          <Progress value={progress} className="w-1/2" />
+          <Progress value={progress} className="w-1/2 bg-muted/30" />
         </div>
       </div>
 
       <CardContent>
         <Tabs defaultValue="puzzle" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="puzzle">Puzzle</TabsTrigger>
-            <TabsTrigger value="solution" disabled={!isSolved}>
+          <TabsList className="grid w-full grid-cols-2 bg-muted/20">
+            <TabsTrigger value="puzzle" className="text-foreground hover:bg-muted/10">Puzzle</TabsTrigger>
+            <TabsTrigger value="solution" disabled={!isSolved} className="text-foreground hover:bg-muted/10">
               Solution
             </TabsTrigger>
           </TabsList>
@@ -169,12 +169,7 @@ export default function NumberSlider() {
                 return (
                   <div
                     key={index}
-                    className={`
-                      flex items-center justify-center 
-                      text-2xl font-semibold rounded-md
-                      ${getTileStyle(tile)}
-                      aspect-square
-                    `}
+                    className={`flex items-center justify-center text-2xl font-semibold rounded-md ${getTileStyle(tile)} aspect-square`}
                     onClick={() => handleTileClick(row, col)}
                   >
                     {tile !== 0 && tile}
@@ -192,16 +187,28 @@ export default function NumberSlider() {
 
       <CardFooter className="flex justify-between gap-2">
         <div className="flex gap-2">
-          <Button variant="outline" onClick={handleReset}>
+          <Button 
+            variant="outline" 
+            className="border-muted text-foreground hover:bg-muted/10"
+            onClick={handleReset}
+          >
             <RotateCcw className="h-4 w-4 mr-2" />
             Reset
           </Button>
-          <Button variant="outline" onClick={handleShuffle}>
+          <Button 
+            variant="outline" 
+            className="border-muted text-foreground hover:bg-muted/10"
+            onClick={handleShuffle}
+          >
             <Shuffle className="h-4 w-4 mr-2" />
             Shuffle
           </Button>
         </div>
-        <Button onClick={handleSolve} disabled={isSolving || isSolved} className="bg-primary hover:bg-primary/90">
+        <Button 
+          onClick={handleSolve} 
+          disabled={isSolving || isSolved} 
+          className="bg-primary text-primary-foreground hover:bg-primary/90"
+        >
           <Sparkles className="h-4 w-4 mr-2" />
           {isSolving ? "Solving..." : isSolved ? "Solved!" : "Solve"}
         </Button>
