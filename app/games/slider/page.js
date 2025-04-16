@@ -28,16 +28,18 @@ export default function SliderPage() {
           </div>
         </CardHeader>
         <CardContent className="prose dark:prose-invert">
-          <h2>How to Play</h2>
-          <p>The Number Slider puzzle consists of a grid of numbered tiles with one empty space. The goal is to arrange the numbers in ascending order.</p>
-          <h3>Rules:</h3>
-          <ul>
+          <h2 className="text-2xl font-semibold text-primary">How to Play</h2>
+          <p className="text-gray-700 dark:text-gray-300">
+            The Number Slider puzzle consists of a grid of numbered tiles with one empty space. The goal is to arrange the numbers in ascending order.
+          </p>
+          <h3 className="text-xl font-medium mt-4">Rules:</h3>
+          <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
             <li>Click any tile adjacent to the empty space to move it</li>
             <li>Numbers must be arranged in ascending order from left to right, top to bottom</li>
             <li>The empty space should end up in the bottom-right corner</li>
           </ul>
-          <h3>Controls:</h3>
-          <ul>
+          <h3 className="text-xl font-medium mt-4">Controls:</h3>
+          <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
             <li>Click tiles to move them into the empty space</li>
             <li>Use arrow keys to move tiles (optional)</li>
           </ul>

@@ -13,7 +13,7 @@ async function compileEngine() {
 
   // Platform-specific executable extension
   const exeExt = platform === 'win32' ? '.exe' : '';
-  const outputPath = path.join(tempDir, `sudoku_engine${exeExt}`);
+  const outputPath = path.join(tempDir, `sudoku_engine_active${exeExt}`); // Ensure consistent naming
 
   // Platform-specific compilation command
   const compileCmd = platform === 'win32'

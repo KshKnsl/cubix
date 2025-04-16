@@ -20,7 +20,7 @@ export default async function handler(req, res) {
     // Source file paths with platform-specific executable extension
     const sourcePath = path.join(process.cwd(), 'cpp', 'sudoku_engine.cpp')
     const exeExt = os.platform() === 'win32' ? '.exe' : ''
-    const uniqueExe = path.join(tempDir, `sudoku_engine_${Date.now()}_${Math.random().toString(36).slice(2)}${exeExt}`)
+    const uniqueExe = path.join(tempDir, `sudoku_engine${exeExt}`) // Correct the name to sudoku_engine
 
     // Check if source exists
     try {
@@ -30,7 +30,7 @@ export default async function handler(req, res) {
     }
 
     // Platform-specific compilation command
-    const compileCmd = `g++ "${sourcePath}" -o "${uniqueExe}" -O2`
+    const compileCmd = `g++ "${sourcePath}" -o "${uniqueExe}" -O2` // Compile with the correct name
 
     // Compile to a unique temporary file
     const output = await new Promise((resolve, reject) => {

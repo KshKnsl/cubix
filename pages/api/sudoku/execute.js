@@ -27,33 +27,27 @@ export default async function handler(req, res) {
 
     // Check both possible executable locations
     const tempDir = path.join(os.tmpdir(), 'cubix-sudoku')
-    const executablePath = path.join(tempDir, 'sudoku_engine.exe')
-    const altExecutablePath = path.join(tempDir, 'sudoku_engine_active.exe')
+    const executablePath = path.join(tempDir, `sudoku_engine${os.platform() === 'win32' ? '.exe' : ''}`); // Correct the name to sudoku_engine
     
     let targetExecutable = executablePath
     
     try {
-      await fs.access(executablePath)
+      await fs.access(executablePath); // Check for the updated executable
     } catch (error) {
-      try {
-        await fs.access(altExecutablePath)
-        targetExecutable = altExecutablePath
-      } catch (error) {
-        console.error('No executable found:', error)
-        return res.status(500).json({ error: 'Sudoku engine not found. Please compile first.' })
-      }
+      console.error('No executable found:', error)
+      return res.status(500).json({ error: 'Sudoku engine not found. Please compile first.' })
     }
 
     // Format command for PowerShell
     const cmdArgs = [command, ...args.map(arg => arg.toString())]
-    const cmdLine = `& "${targetExecutable}" ${cmdArgs.join(' ')}`
+    const cmdLine = `${executablePath} ${cmdArgs.join(' ')}`;
     
     console.log('Executing command:', cmdLine)
     
     const output = await new Promise((resolve, reject) => {
-      // Use PowerShell to execute the command
+      // Use appropriate shell
       exec(cmdLine, {
-        shell: 'powershell.exe',
+        shell: os.platform() === 'win32' ? 'powershell.exe' : '/bin/bash', // Use appropriate shell
         timeout: 10000, // 10 second timeout
         maxBuffer: 1024 * 1024 // 1MB buffer
       }, (error, stdout, stderr) => {
