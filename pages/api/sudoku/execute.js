@@ -28,7 +28,7 @@ export default async function handler(req, res) {
     // Check both possible executable locations
     const tempDir = path.join(os.tmpdir(), 'cubix-sudoku')
     const executablePath = path.join(tempDir, 'sudoku_engine.exe')
-    const altExecutablePath = path.join(tempDir, 'sudoku_engine_active.exe')
+    const altExecutablePath = path.join(tempDir, 'sudoku_engine.exe') // Corrected alternative path
     
     let targetExecutable = executablePath
     
