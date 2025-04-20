@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
-import { SolutionSteps } from "@/components/solution-steps"
 import { Sparkles, RotateCcw, Timer, Trophy, Shuffle, Grid2x2 } from "lucide-react"
 
 export default function NumberSlider() {
@@ -149,8 +148,8 @@ export default function NumberSlider() {
     if (tile === 0) return "bg-muted/30 text-muted-foreground"
 
     return `
-      bg-gradient-to-br from-primary/30 to-primary/20
-      hover:from-primary/40 hover:to-primary/30
+      bg-[url('https://www.shutterstock.com/image-vector/uniform-walnut-wooden-texture-horizontal-600nw-2221081683.jpg')] 
+      bg-cover bg-center
       text-primary-foreground
       shadow-md
       border border-primary/30
@@ -195,13 +194,6 @@ export default function NumberSlider() {
 
       <CardContent>
         <Tabs defaultValue="puzzle" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 bg-muted/20">
-            <TabsTrigger value="puzzle" className="text-foreground hover:bg-muted/10">Puzzle</TabsTrigger>
-            <TabsTrigger value="solution" disabled={!isSolved} className="text-foreground hover:bg-muted/10">
-              Solution
-            </TabsTrigger>
-          </TabsList>
-
           <TabsContent value="puzzle" className="mt-4">
             <div className="grid grid-cols-4 gap-2 aspect-square w-full max-w-md mx-auto bg-muted/30 rounded-lg p-4 border theme-transition">
               {board.flat().map((tile, index) => {
@@ -217,28 +209,6 @@ export default function NumberSlider() {
                   </div>
                 )
               })}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="solution" className="mt-4 animate-slide-in">
-            <div className="flex flex-col items-center gap-4">
-              <SolutionSteps steps={solution.slice(0, currentStep + 1)} />
-              <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
-                  onClick={handlePreviousStep} 
-                  disabled={currentStep === 0}
-                >
-                  Previous
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={handleNextStep} 
-                  disabled={currentStep === solution.length - 1}
-                >
-                  Next
-                </Button>
-              </div>
             </div>
           </TabsContent>
         </Tabs>

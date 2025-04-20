@@ -31,16 +31,18 @@ export default function RubiksPage() {
         <CardContent>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="prose dark:prose-invert text-foreground">
-              <h2>How to Play</h2>
-              <p>The Rubik's Cube is a 3D combination puzzle invented in 1974. The goal is to return each face to a solid color.</p>
-              <h3>Rules:</h3>
-              <ul>
+              <h2 className="text-2xl font-semibold text-primary">How to Play</h2>
+              <p className="text-gray-700 dark:text-gray-300">
+                The Rubik's Cube is a 3D combination puzzle invented in 1974. The goal is to return each face to a solid color.
+              </p>
+              <h3 className="text-xl font-medium mt-4">Rules:</h3>
+              <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
                 <li>Each face can be rotated clockwise or counterclockwise</li>
                 <li>The cube is solved when all sides show a single color</li>
                 <li>A standard 3x3x3 cube has over 43 quintillion possible combinations</li>
               </ul>
-              <h3>Controls:</h3>
-              <ul>
+              <h3 className="text-xl font-medium mt-4">Controls:</h3>
+              <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
                 <li>Click and drag to rotate the cube view</li>
                 <li>Click face buttons to rotate cube faces</li>
                 <li>Use keyboard shortcuts (F, B, R, L, U, D) for faster moves</li>
