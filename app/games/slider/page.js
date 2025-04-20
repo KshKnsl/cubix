@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Grid2x2, Play, Wand2 } from "lucide-react"
+import { Grid2x2, Play } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
 
 export default function SliderPage() {
@@ -46,17 +46,11 @@ export default function SliderPage() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         <Link href="/games/slider/play">
           <Button className="w-full h-32 text-xl gap-4" variant="default">
             <Play className="h-6 w-6" />
             Play Game
-          </Button>
-        </Link>
-        <Link href="/games/slider/solve">
-          <Button className="w-full h-32 text-xl gap-4" variant="outline">
-            <Wand2 className="h-6 w-6" />
-            Solve Puzzle
           </Button>
         </Link>
       </div>

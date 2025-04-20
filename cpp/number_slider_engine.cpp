@@ -129,10 +129,10 @@ private:
     bool isSolvable(const vector<vector<int>> &board) const
     {
         vector<int> flat; // Flattened representation of the board
-        int row_with_zero = 0; // Row index of the empty tile
+        int zero_row = 0; // Row index of the empty tile
         for (int i = 0; i < N; ++i)
             for (int j = 0; j < N; ++j) {
-                if (board[i][j] == 0) row_with_zero = i; // Record the row of zero
+                if (board[i][j] == 0) zero_row = i; // Record the row of zero
                 else flat.push_back(board[i][j]); // Add non-zero tiles to the flat vector
             }
 
@@ -142,9 +142,14 @@ private:
                 if (flat[i] > flat[j])
                     ++inversions; // Increment inversions count
 
-        int row_from_bottom = N - row_with_zero; // Calculate row index from the bottom
+        // Adjust zero_row to be 1-based from the bottom
+        int row_from_bottom = N - zero_row;
+
         // Determine solvability based on inversions and row position of zero
-        return (row_from_bottom % 2 == 0) ? inversions % 2 == 1 : inversions % 2 == 0;
+        // For 4x4 puzzles:
+        // - If row_from_bottom is odd, inversions must be even.
+        // - If row_from_bottom is even, inversions must be odd.
+        return (row_from_bottom % 2 == 1) ? (inversions % 2 == 0) : (inversions % 2 == 1);
     }
 
     int IDA_dfs(Node &node, int threshold, int &next_threshold, int last_move, unordered_set<string> &visited) const
@@ -234,7 +239,7 @@ public:
 int main(int argc, char *argv[])
 {
     vector<vector<int>> board;
-    
+
     if (argc >= 17)
     { // 16 board values + 1 for program name
         board.resize(4, vector<int>(4));
@@ -250,8 +255,7 @@ int main(int argc, char *argv[])
             {7, 13, 9, 12},
             {8, 14, 5, 11},
             {3, 2, 1, 15},
-            {0, 10, 6, 4}
-        };
+            {0, 10, 6, 4}};
         cerr << "Using default board. For custom board: " << argv[0] << " <16 board values>" << endl;
     }
 

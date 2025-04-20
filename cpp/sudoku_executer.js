@@ -19,7 +19,7 @@ class SudokuExecuter {
             }
 
             const result = await response.json();
-            this.executablePath = result.executablePath;
+            this.executablePath = result.executablePath.replace(/\.exe\.exe$/, '.exe'); // Fix double .exe issue
             return true;
         } catch (error) {
             console.error('Failed to initialize:', error);
