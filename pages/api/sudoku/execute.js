@@ -28,7 +28,8 @@ export default async function handler(req, res) {
     // Check both possible executable locations
     const tempDir = path.join(os.tmpdir(), 'cubix-sudoku')
     const executablePath = path.join(tempDir, `sudoku_engine${os.platform() === 'win32' ? '.exe' : ''}`); // Correct the name to sudoku_engine
-    
+    const altExecutablePath = path.join(tempDir, `sudoku_engine${os.platform() === 'win32' ? '.exe' : ''}`); // Corrected alternative path
+
     let targetExecutable = executablePath
     
     try {

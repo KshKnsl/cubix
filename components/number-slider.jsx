@@ -22,6 +22,8 @@ export default function NumberSlider() {
     [9, 10, 11, 12],
     [13, 14, 0, 15],
   ])
+  const [solution, setSolution] = useState([])
+  const [currentStep, setCurrentStep] = useState(0) // Track the current solution step
 
   useEffect(() => {
     if (isSolving) {
@@ -42,18 +44,29 @@ export default function NumberSlider() {
     }
   }, [isSolving, timer])
 
-  const handleSolve = () => {
-    setIsSolving(true)
-    setTimeElapsed(0)
-    setProgress(0)
+  const handleSolve = async () => {
+    setIsSolving(true);
+    try {
+      const response = await fetch('/api/number-slider/execute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ board: board.flat() }),
+      });
 
-    setTimeout(() => {
-      setIsSolving(false)
-      setIsSolved(true)
-      setSolveTime(timeElapsed)
-      setPoints((prev) => prev + Math.floor(100 - timeElapsed * 2) + 50)
-    }, 4000)
-  }
+      if (!response.ok) {
+        throw new Error((await response.json()).error || 'Failed to solve puzzle');
+      }
+
+      const { output } = await response.json();
+      const solutionSteps = output.split('\n').filter(Boolean);
+      setSolution(solutionSteps);
+      setIsSolved(true);
+    } catch (error) {
+      console.error('Solve error:', error);
+    } finally {
+      setIsSolving(false);
+    }
+  };
 
   const handleReset = () => {
     setIsSolved(false)
@@ -65,6 +78,7 @@ export default function NumberSlider() {
       [9, 10, 11, 12],
       [13, 14, 0, 15],
     ])
+    setCurrentStep(0)
   }
 
   const handleShuffle = () => {
@@ -74,6 +88,7 @@ export default function NumberSlider() {
       [13, 10, 7, 12],
       [0, 14, 11, 15],
     ])
+    setCurrentStep(0)
   }
 
   const handleTileClick = (row, col) => {
@@ -102,6 +117,32 @@ export default function NumberSlider() {
     }
     return null
   }
+
+  const applyStep = (step) => {
+    const [row, col] = step.split(',').map(Number);
+    const emptyPos = findEmptyTile();
+    if (!emptyPos) return;
+
+    const [emptyRow, emptyCol] = emptyPos;
+    const newBoard = [...board.map((row) => [...row])];
+    newBoard[emptyRow][emptyCol] = board[row][col];
+    newBoard[row][col] = 0;
+    setBoard(newBoard);
+  };
+
+  const handleNextStep = () => {
+    if (currentStep < solution.length - 1) {
+      setCurrentStep((prev) => prev + 1);
+      applyStep(solution[currentStep + 1]);
+    }
+  };
+
+  const handlePreviousStep = () => {
+    if (currentStep > 0) {
+      setCurrentStep((prev) => prev - 1);
+      applyStep(solution[currentStep - 1]);
+    }
+  };
 
   const getTileStyle = (tile) => {
     if (tile === 0) return "bg-muted/30 text-muted-foreground"
