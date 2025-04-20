@@ -55,17 +55,11 @@ export default function RubiksPage() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-1 gap-4 md:gap-6">
         <Link href="/games/rubiks/play" className="transition-transform hover:scale-[1.02] active:scale-[0.98]">
           <Button className="w-full h-24 md:h-32 text-lg md:text-xl gap-4 bg-primary text-primary-foreground hover:bg-primary/90">
             <Play className="h-6 w-6" />
             Play Game
-          </Button>
-        </Link>
-        <Link href="/games/rubiks/solve" className="transition-transform hover:scale-[1.02] active:scale-[0.98]">
-          <Button className="w-full h-24 md:h-32 text-lg md:text-xl gap-4 border border-muted bg-background text-foreground hover:bg-muted/10">
-            <Wand2 className="h-6 w-6" />
-            Solve Puzzle
           </Button>
         </Link>
       </div>
