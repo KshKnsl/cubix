@@ -295,7 +295,7 @@ export default function NumberSlider() {
                 <span>Number Slider</span>
               </CardTitle>
               <CardDescription className="text-muted-foreground text-base sm:text-lg">
-                Solve the puzzle using the A* Search Algorithm
+                Solve the puzzle using the IDA* Search Algorithm
               </CardDescription>
             </div>
             <Badge variant={isSolved ? "success" : "outline"} className="text-base sm:text-lg px-4 py-2">
