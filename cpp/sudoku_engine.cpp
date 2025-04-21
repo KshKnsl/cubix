@@ -10,7 +10,7 @@ using namespace std;
 class SudokuEngine {
 private:
     // Checks if placing 'num' at position (row,col) is valid
-    bool isValid(const vector<vector<int>>& grid, int row, int col, int num) {
+    bool isValid(const vector<vector<int> >& grid, int row, int col, int num) {
         // Check row
         for(int x = 0; x < 9; x++)
             if(grid[row][x] == num) return false;
@@ -29,7 +29,7 @@ private:
     }
 
     // Solves the Sudoku puzzle using backtracking algorithm
-    bool solveSudoku(vector<vector<int>>& grid) {
+    bool solveSudoku(vector<vector<int> >& grid) {
         int row = -1, col = -1;
         bool isEmpty = false;
         
@@ -61,12 +61,12 @@ private:
     }
 
     // Converts a flat array of 81 values to a 9x9 grid
-    vector<vector<int>> parseBoard(const vector<int>& values) {
+    vector<vector<int> > parseBoard(const vector<int>& values) {
         if (values.size() != 81) {
             throw runtime_error("Invalid board size");
         }
 
-        vector<vector<int>> grid(9, vector<int>(9, 0));
+        vector<vector<int> > grid(9, vector<int>(9, 0));
         for(int i = 0; i < 9; i++) {
             for(int j = 0; j < 9; j++) {
                 int val = values[i * 9 + j];
@@ -80,7 +80,7 @@ private:
     }
 
     // Converts a 9x9 grid to a comma-separated string
-    string gridToString(const vector<vector<int>>& grid) {
+    string gridToString(const vector<vector<int> >& grid) {
         stringstream result;
         for(int i = 0; i < 9; i++) {
             for(int j = 0; j < 9; j++) {

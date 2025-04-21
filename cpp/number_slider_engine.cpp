@@ -11,11 +11,11 @@ class Node
 {
 private:
     static const int N = 4;      // Size of the puzzle (4x4)
-    vector<vector<int>> board;   // Current state of the puzzle board
+    vector<vector<int> > board;   // Current state of the puzzle board
     int g;                       // Cost from start (number of moves made)
     int h;                       // Heuristic estimate (estimated cost to reach goal)
     int zero_row, zero_col;      // Position of the empty tile (zero)
-    vector<pair<int, int>> path; // Move history (positions of the empty tile)
+    vector<pair<int, int> > path; // Move history (positions of the empty tile)
     int last_move;               // Last move direction index
 
     // Finds the position of the empty tile (zero) in the board
@@ -74,7 +74,7 @@ private:
     }
 
 public:
-    Node(const vector<vector<int>> &b, int g_, const vector<pair<int, int>> &p, int last_move_ = -1)
+    Node(const vector<vector<int> > &b, int g_, const vector<pair<int, int> > &p, int last_move_ = -1)
         : board(b), g(g_), path(p), last_move(last_move_)
     {
         h = computeHeuristic(); // Compute heuristic value upon initialization
@@ -102,18 +102,18 @@ public:
     string serialize() const
     {
         string key;
-        for (const auto& row : board) {
-            for (int val : row) {
-                key += to_string(val) + ",";
+        for (size_t i = 0; i < board.size(); ++i) {
+            for (size_t j = 0; j < board[i].size(); ++j) {
+                key += to_string(board[i][j]) + ",";
             }
         }
         return key;
     }
 
-    const vector<vector<int>> &getBoard() const { return board; }
+    const vector<vector<int> > &getBoard() const { return board; }
     int getZeroRow() const { return zero_row; }
     int getZeroCol() const { return zero_col; }
-    const vector<pair<int, int>> &getPath() const { return path; }
+    const vector<pair<int, int> > &getPath() const { return path; }
     int getLastMove() const { return last_move; }
     int getG() const { return g; }
     friend class FifteenPuzzleSolver; // Grant access to the solver
@@ -124,9 +124,9 @@ class FifteenPuzzleSolver
 {
 private:
     static const int N = 4;                                                       // Size of the puzzle (4x4)
-    const vector<pair<int, int>> directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}}; // Possible move directions (Up, Down, Left, Right)
-
-    bool isSolvable(const vector<vector<int>> &board) const
+    vector<pair<int, int> > directions; // Possible move directions (Up, Down, Left, Right)
+     
+    bool isSolvable(const vector<vector<int> > &board) const
     {
         vector<int> flat; // Flattened representation of the board
         int zero_row = 0; // Row index of the empty tile
@@ -163,8 +163,8 @@ private:
         // Check if the current node is the goal state
         if (node.isGoal()) {
             cout << "Solved in " << node.getG() << " moves.\n"; // Output the number of moves
-            for (const auto& p : node.getPath())
-                cout << "(" << p.first << "," << p.second << ") "; // Output the path taken
+            for (size_t i = 0; i < node.getPath().size(); ++i)
+                cout << "(" << node.getPath()[i].first << "," << node.getPath()[i].second << ") "; // Output the path taken
             cout << "\n";
             return node.getG(); // Return the number of moves to goal
         }
@@ -192,9 +192,9 @@ private:
 
             // Check if the new position is within bounds
             if (ni >= 0 && ni < N && nj >= 0 && nj < N) {
-                vector<vector<int>> newBoard = node.getBoard(); // Create a new board state
+                vector<vector<int> > newBoard = node.getBoard(); // Create a new board state
                 swap(newBoard[node.getZeroRow()][node.getZeroCol()], newBoard[ni][nj]); // Perform the move
-                vector<pair<int, int>> newPath = node.getPath(); // Copy the path
+                vector<pair<int, int> > newPath = node.getPath(); // Copy the path
                 newPath.emplace_back(ni, nj); // Add the new position to the path
                 Node next(newBoard, node.getG() + 1, newPath, i); // Create the next node
                 int result = IDA_dfs(next, threshold, next_threshold, i, visited); // Recur
@@ -207,16 +207,23 @@ private:
     }
 
 public:
+public:
+    FifteenPuzzleSolver() {
+        // Initialize possible move directions: Up, Down, Left, Right
+        directions.push_back(make_pair(-1, 0)); // Up
+        directions.push_back(make_pair(1, 0));  // Down
+        directions.push_back(make_pair(0, -1)); // Left
+        directions.push_back(make_pair(0, 1));  // Right
+    }
     // Public interface to solve the puzzle
-    void solve(const vector<vector<int>> &board)
+    void solve(const vector<vector<int> > &board)
     {
         if (!isSolvable(board))
         {
-            cout << "Puzzle is not solvable.\n"; // Output if the puzzle is unsolvable
             return;
         }
 
-        Node start(board, 0, {});      // Initialize the starting node
+        Node start(board, 0, vector<pair<int, int> >(), -1); // Initialize the starting node
         int threshold = start.f();     // Set the initial threshold
         unordered_set<string> visited; // Set to track visited states
 
@@ -235,10 +242,9 @@ public:
         }
     }
 };
-
 int main(int argc, char *argv[])
 {
-    vector<vector<int>> board;
+    vector<vector<int> > board;
 
     if (argc >= 17)
     { // 16 board values + 1 for program name
@@ -251,16 +257,17 @@ int main(int argc, char *argv[])
     else
     {
         // Use the default board if no arguments are provided
-        board = {
-            {7, 13, 9, 12},
-            {8, 14, 5, 11},
-            {3, 2, 1, 15},
-            {0, 10, 6, 4}};
+        int default_board_data[4][4] = {{7, 13, 9, 12}, {8, 14, 5, 11}, {3, 2, 1, 15}, {0, 10, 6, 4}};
+        board.resize(4, vector<int>(4));
+        for (int i = 0; i < 4; ++i) {
+            for (int j = 0; j < 4; ++j) {
+                board[i][j] = default_board_data[i][j];
+            }
+        }
         cerr << "Using default board. For custom board: " << argv[0] << " <16 board values>" << endl;
     }
 
     FifteenPuzzleSolver solver; // Create a solver instance
     solver.solve(board);        // Solve the puzzle
-
     return 0;
 }
