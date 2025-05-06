@@ -1,6 +1,6 @@
 "use client"
 import Link from 'next/link'
-import RubiksCube3D from "@/components/rubiks-cube-3d"
+import RubiksCube2D from "@/components/rubiks-cube-2d"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -18,7 +18,7 @@ export default function RubiksPlayPage() {
       <Card className="overflow-hidden">
         <CardContent className="p-0 sm:p-6">
           <div className="max-w-3xl mx-auto">
-            <RubiksCube3D />
+            <RubiksCube2D />
           </div>
         </CardContent>
       </Card>
