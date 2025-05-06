@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Grid3x3, Play, Wand2 } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
-import RubiksCube3D from "@/components/rubiks-cube-3d"
+import RubiksCube3D from "@/components/rubiks-cube-2d"
 
 export default function RubiksPage() {
   return (
