@@ -2,12 +2,9 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 import { Toaster } from "@/components/ui/toaster"
-import { Sparkles, RotateCcw, Timer, Trophy, Grid3x3, Lightbulb } from "lucide-react"
+import { Sparkles, RotateCcw, Trophy, Lightbulb } from "lucide-react"
 import SudokuExecuter from "@/cpp/sudoku_executer"
 
 const EMPTY_BOARD = Array(9).fill().map(() => Array(9).fill(''))
@@ -16,10 +13,9 @@ export default function Sudoku() {
   const [isSolving, setIsSolving] = useState(false)
   const [board, setBoard] = useState(EMPTY_BOARD)
   const [selectedCell, setSelectedCell] = useState(null)
-  const [error, setError] = useState(null)
-  const [message, setMessage] = useState(null)
+  const [_, setError] = useState(null)
+  const [_1, setMessage] = useState(null)
   const [timeElapsed, setTimeElapsed] = useState(0)
-  const [points, setPoints] = useState(100)
   const [engine] = useState(() => new SudokuExecuter())
   const { toast } = useToast()
 

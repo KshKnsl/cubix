@@ -6,15 +6,18 @@ const os = require('os');
 async function compileEngine() {
   const platform = os.platform();
   const sudokuTempDir = path.join(os.tmpdir(), 'cubix-sudoku');
-  const sliderTempDir = path.join(os.tmpdir(), 'cubix-slider'); // Separate directory for Number Slider
+  const sliderTempDir = path.join(os.tmpdir(), 'cubix-slider');
+  const rubixTempDir = path.join(os.tmpdir(), 'rubix');
   await fs.mkdir(sudokuTempDir, { recursive: true });
   await fs.mkdir(sliderTempDir, { recursive: true });
+  await fs.mkdir(rubixTempDir, { recursive: true }); // Add mkdir for rubix directory
 
   const exeExt = platform === 'win32' ? '.exe' : ''; // Determine extension based on platform
 
   const engines = [
     { source: 'cpp/sudoku_engine.cpp', output: `sudoku_engine${exeExt}`, tempDir: sudokuTempDir },
-    { source: 'cpp/number_slider_engine.cpp', output: `number_slider_engine${exeExt}`, tempDir: sliderTempDir }
+    { source: 'cpp/number_slider_engine.cpp', output: `number_slider_engine${exeExt}`, tempDir: sliderTempDir },
+    { source: 'cpp/rubix.cpp', output: `rubix${exeExt}`, tempDir: rubixTempDir },
   ];
 
   for (const { source, output, tempDir } of engines) {
