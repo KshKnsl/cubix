@@ -6,7 +6,7 @@ import { Grid3x3, Play } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
 import Image from "next/image"
 
-export default function RubiksPage() {
+export default function RbkPage() {
   return (
     <main className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">

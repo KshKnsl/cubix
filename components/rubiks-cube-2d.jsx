@@ -17,7 +17,7 @@ export default function RubiksCube2D() {
   // Initialize cube state with default values
   const [startState, setStartState] = useState([
     // Face 0 (Top/White)
-    [[0, 0, 0], [0, 1, 2], [0, 3, 4]],
+    [[0, 0, 0], [0, 5, 5], [0, 3, 4]],
     // Face 1 (Front/Green)
     [[1, 1, 1], [3, 1, 2], [0, 1, 2]],
     // Face 2 (Left/Orange)

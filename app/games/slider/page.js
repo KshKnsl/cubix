@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Grid2x2, Play } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
 
-export default function SliderPage() {
+export default function SldrPage() {
   return (
     <main className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
