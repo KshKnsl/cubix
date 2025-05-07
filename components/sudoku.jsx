@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import { Toaster } from "@/components/ui/toaster"
 import { Sparkles, RotateCcw, Trophy, Lightbulb } from "lucide-react"
-import SudokuExecuter from "@/cpp/sudoku_executer"
+import { SudokuService } from "@/lib/services/sudoku-service"
 
 const EMPTY_BOARD = Array(9).fill().map(() => Array(9).fill(''))
 
@@ -16,13 +16,13 @@ export default function Sudoku() {
   const [_, setError] = useState(null)
   const [_1, setMessage] = useState(null)
   const [timeElapsed, setTimeElapsed] = useState(0)
-  const [engine] = useState(() => new SudokuExecuter())
+  const [points, setPoints] = useState(100)
   const { toast } = useToast()
 
   useEffect(() => {
     const initEngine = async () => {
       try {
-        await engine.initialize()
+        await SudokuService.compileSolver()
         fetchNewPuzzle()
       } catch (err) {
         toast({
@@ -33,7 +33,12 @@ export default function Sudoku() {
       }
     }
     initEngine()
-  }, [engine])
+  }, [])
+
+  // Convert 2D board to 1D array
+  const boardToArray = () => {
+    return board.flat().map(cell => cell === '' ? '0' : cell);
+  }
 
   const fetchNewPuzzle = async () => {
     try {
@@ -42,7 +47,6 @@ export default function Sudoku() {
       const puzzle = data.newboard.grids[0]
       const newBoard = puzzle.value.map(row => row.map(cell => cell === 0 ? "" : cell.toString()))
       setBoard(newBoard)
-      await engine.setBoard(newBoard)
       setMessage('New puzzle loaded!')
       setError(null)
       setPoints(100)
@@ -71,7 +75,6 @@ export default function Sudoku() {
       const newBoard = board.map(row => [...row])
       newBoard[row][col] = ''
       setBoard(newBoard)
-      await engine.setBoard(newBoard)
       return
     }
 
@@ -79,10 +82,12 @@ export default function Sudoku() {
       const newBoard = board.map(row => [...row])
       newBoard[row][col] = key
       setBoard(newBoard)
-      await engine.setBoard(newBoard)
       
       try {
-        const isValid = await engine.check()
+        const boardArray = newBoard.flat().map(cell => cell === '' ? '0' : cell);
+        const result = await SudokuService.checkPuzzle(boardArray);
+        const isValid = result.output === 'Valid';
+        
         if (!isValid) {
           setPoints(prev => Math.max(0, prev - 10))
           toast({
@@ -91,8 +96,8 @@ export default function Sudoku() {
             variant: "destructive"
           })
         } else {
-          const isSolved = await engine.isSolved()
-          if (isSolved) {
+          // Check if solved
+          if (!boardArray.includes('0')) {
             toast({
               title: "Congratulations!",
               description: "You solved the puzzle!",
@@ -110,9 +115,13 @@ export default function Sudoku() {
     try {
       setIsSolving(true)
       setError(null)
-      const solution = await engine.solve()
+      const boardArray = boardToArray();
+      const result = await SudokuService.solvePuzzle(boardArray);
+      
+      // Parse the result
+      const solutionArray = result.output.split(',');
       const newBoard = Array(9).fill().map((_, i) => 
-        solution.slice(i * 9, (i + 1) * 9)
+        solutionArray.slice(i * 9, (i + 1) * 9).map(n => n === '0' ? '' : n)
       )
       setBoard(newBoard)
       toast({
@@ -133,7 +142,10 @@ export default function Sudoku() {
 
   const handleCheck = async () => {
     try {
-      const isValid = await engine.check()
+      const boardArray = boardToArray();
+      const result = await SudokuService.checkPuzzle(boardArray);
+      const isValid = result.output === 'Valid';
+      
       toast({
         title: isValid ? "Valid Board" : "Invalid Board",
         description: isValid ? "Current board configuration is valid!" : "Current board configuration is invalid!",
@@ -159,10 +171,16 @@ export default function Sudoku() {
     }
 
     try {
-      const hint = await engine.hint(selectedCell.row, selectedCell.col)
+      const { row, col } = selectedCell;
+      const boardArray = boardToArray();
+      const args = [...boardArray, row, col];
+      
+      const result = await SudokuService.getHint(boardArray, row, col);
+      const hint = parseInt(result.output);
+      
       if (hint && !isNaN(hint)) {
         const newBoard = board.map(row => [...row])
-        newBoard[selectedCell.row][selectedCell.col] = hint
+        newBoard[selectedCell.row][selectedCell.col] = hint.toString()
         setBoard(newBoard)
         setPoints(prev => Math.max(0, prev - 5))
         toast({
@@ -194,7 +212,6 @@ export default function Sudoku() {
     const newBoard = board.map(row => [...row])
     newBoard[row][col] = ''
     setBoard(newBoard)
-    await engine.setBoard(newBoard)
     toast({
       title: "Cell Cleared",
       description: "The selected cell has been cleared",
@@ -206,9 +223,8 @@ export default function Sudoku() {
     if (!selectedCell) return
     const { row, col } = selectedCell
     const newBoard = board.map(row => [...row])
-    newBoard[row][col] = number
+    newBoard[row][col] = number.toString()
     setBoard(newBoard)
-    await engine.setBoard(newBoard)
   }
 
   // Timer effect
@@ -219,6 +235,11 @@ export default function Sudoku() {
     return () => clearInterval(timer)
   }, [])
 
+  // Handle keypress event
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyPress)
+    return () => window.removeEventListener('keydown', handleKeyPress)
+  }, [selectedCell, board])
 
   return (
     <>

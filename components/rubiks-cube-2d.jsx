@@ -1,7 +1,8 @@
 "use client"
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { toast } from "@/components/ui/use-toast"
+import { RubixService } from "@/lib/services/rubix-service"
 
 // Color mapping
 const COLORS = {
@@ -48,6 +49,21 @@ export default function RubiksCube2D() {
   const [solution, setSolution] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Compile the Rubix solver when component mounts
+  useEffect(() => {
+    const compileSolver = async () => {
+      try {
+        await RubixService.compileSolver();
+        console.log("Rubik's Cube solver compiled successfully");
+      } catch (err) {
+        console.error("Failed to compile Rubik's Cube solver:", err);
+        setError("Failed to initialize solver. Please try again later.");
+      }
+    };
+    
+    compileSolver();
+  }, []);
 
   const handleColorChange = (faceIndex, rowIndex, colIndex, value, isStart) => {
     const colorValue = parseInt(value);
@@ -128,24 +144,9 @@ export default function RubiksCube2D() {
     }
 
     try {
-      const response = await fetch('/api/rubix/execute', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          startState,
-          finalState
-        }),
-      });
-
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to solve the cube');
-      }
-
-      setSolution(data.output);
+      // Use the RubixService instead of direct API call
+      const result = await RubixService.solvePuzzle(startState, finalState);
+      setSolution(result.output);
       toast({
         title: "Cube Solution",
         description: "Solution found successfully!",

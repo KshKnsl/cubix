@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress"
 import { Sparkles, RotateCcw, Shuffle, Grid2x2, Info, ChevronRight, ChevronLeft } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import * as Dialog from "@radix-ui/react-dialog"
+import { SliderService } from "@/lib/services/slider-service"
 
 export default function NumberSlider() {
   const [isSolving, setIsSolving] = useState(false)
@@ -36,6 +37,20 @@ export default function NumberSlider() {
   const boardRef = useRef(board)
 
   useEffect(() => {
+    // Initial compilation of the solver when component mounts
+    const compileSolver = async () => {
+      try {
+        await SliderService.compileSolver();
+        console.log("Number slider solver compiled successfully");
+      } catch (error) {
+        console.error("Failed to compile number slider solver:", error);
+      }
+    };
+    
+    compileSolver();
+  }, []);
+
+  useEffect(() => {
     currentStepRef.current = currentStep
     boardRef.current = board
     
@@ -56,20 +71,11 @@ export default function NumberSlider() {
     setIsSolving(true);
     setProgress(10);
     try {
-      const response = await fetch("/api/number-slider/execute", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ board: board.flat() }),
-      });
-
+      // Call the SliderService instead of the direct API
+      const result = await SliderService.solvePuzzle(board.flat());
       setProgress(50);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to solve puzzle");
-      }
-
-      const { output } = await response.json();
+      const { output } = result;
       console.log("Solve output:", output);
       setProgress(80);
 

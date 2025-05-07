@@ -105,7 +105,7 @@ public:
     const vector<pair<int, int> > &getPath() const { return path; }
     int getLastMove() const { return last_move; }
     int getG() const { return g; }
-    friend class FifteenPuzzleSolver; // Grant access to the solver
+    friend class FifteenPuzzleSolver;
 };
 
 // Class responsible for solving the 15-puzzle problem
