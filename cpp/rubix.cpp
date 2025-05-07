@@ -11,7 +11,7 @@
 
 using namespace std;
 
-void takeInput(int ***startState, int ***finalState, int argc, char *argv[])
+void takeInput(int ***start, int ***goal, int argc, char *argv[])
 {
     if (argc > 1 && (argc - 1) >= 108)
     {
@@ -22,7 +22,7 @@ void takeInput(int ***startState, int ***finalState, int argc, char *argv[])
             {
                 for (int k = 0; k < 3; k++)
                 {
-                    startState[i][j][k] = atoi(argv[argIndex++]);
+                    start[i][j][k] = atoi(argv[argIndex++]);
                 }
             }
         }
@@ -32,21 +32,21 @@ void takeInput(int ***startState, int ***finalState, int argc, char *argv[])
             {
                 for (int k = 0; k < 3; k++)
                 {
-                    finalState[i][j][k] = atoi(argv[argIndex++]);
+                    goal[i][j][k] = atoi(argv[argIndex++]);
                 }
             }
         }
     }
     else
     {
-        int defaultStartState[54] = {
+        int defaultStart[54] = {
             0, 0, 0, 0, 0, 1, 0, 2, 0,
             1, 1, 1, 1, 1, 2, 1, 0, 1,
             2, 2, 2, 2, 2, 2, 2, 3, 2,
             3, 3, 3, 3, 3, 3, 0, 3, 3,
             4, 4, 4, 4, 4, 4, 4, 4, 1,
             5, 5, 5, 5, 5, 5, 5, 5, 5};
-        int defaultFinalState[54] = {
+        int defaultGoal[54] = {
             0, 0, 0, 0, 0, 0, 0, 0, 0,
             1, 1, 1, 1, 1, 1, 1, 1, 1,
             2, 2, 2, 2, 2, 2, 2, 2, 2,
@@ -54,15 +54,15 @@ void takeInput(int ***startState, int ***finalState, int argc, char *argv[])
             4, 4, 4, 4, 4, 4, 4, 4, 4,
             5, 5, 5, 5, 5, 5, 5, 5, 5};
         int startIdx = 0;
-        int finalIdx = 0;
+        int goalIdx = 0;
         for (int i = 0; i < 6; i++)
         {
             for (int j = 0; j < 3; j++)
             {
                 for (int k = 0; k < 3; k++)
                 {
-                    startState[i][j][k] = defaultStartState[startIdx++];
-                    finalState[i][j][k] = defaultFinalState[finalIdx++];
+                    start[i][j][k] = defaultStart[startIdx++];
+                    goal[i][j][k] = defaultGoal[goalIdx++];
                 }
             }
         }
@@ -88,7 +88,7 @@ void print(int ***arr)
     cout << endl;
 }
 
-int ***rightAntiClock(int ***cube)
+int ***rA(int ***cube)
 {
     int ***temp;
     temp = new int **[6];
@@ -133,7 +133,7 @@ int ***rightAntiClock(int ***cube)
     return temp;
 }
 
-int ***rightClock(int ***cube)
+int ***rC(int ***cube)
 {
     int ***temp;
     temp = new int **[6];
@@ -178,7 +178,7 @@ int ***rightClock(int ***cube)
     return temp;
 }
 
-int ***upClock(int ***cube)
+int ***uC(int ***cube)
 {
     int ***temp;
     temp = new int **[6];
@@ -223,7 +223,7 @@ int ***upClock(int ***cube)
     return temp;
 }
 
-int ***upAntiClock(int ***cube)
+int ***uA(int ***cube)
 {
     int ***temp;
     temp = new int **[6];
@@ -268,7 +268,7 @@ int ***upAntiClock(int ***cube)
     return temp;
 }
 
-int ***leftClock(int ***cube)
+int ***lC(int ***cube)
 {
     int ***temp;
     temp = new int **[6];
@@ -313,7 +313,7 @@ int ***leftClock(int ***cube)
     return temp;
 }
 
-int ***leftAntiClock(int ***cube)
+int ***lA(int ***cube)
 {
     int ***temp;
     temp = new int **[6];
@@ -358,7 +358,7 @@ int ***leftAntiClock(int ***cube)
     return temp;
 }
 
-int ***downClock(int ***cube)
+int ***dC(int ***cube)
 {
     int ***temp;
     temp = new int **[6];
@@ -403,7 +403,7 @@ int ***downClock(int ***cube)
     return temp;
 }
 
-int ***downAntiClock(int ***cube)
+int ***dA(int ***cube)
 {
     int ***temp;
     temp = new int **[6];
@@ -448,7 +448,7 @@ int ***downAntiClock(int ***cube)
     return temp;
 }
 
-int ***frontClock(int ***cube)
+int ***fC(int ***cube)
 {
     int ***temp;
     temp = new int **[6];
@@ -493,7 +493,7 @@ int ***frontClock(int ***cube)
     return temp;
 }
 
-int ***frontAntiClock(int ***cube)
+int ***fA(int ***cube)
 {
     int ***temp;
     temp = new int **[6];
@@ -538,7 +538,7 @@ int ***frontAntiClock(int ***cube)
     return temp;
 }
 
-int ***backClock(int ***cube)
+int ***bC(int ***cube)
 {
     int ***temp;
     temp = new int **[6];
@@ -583,7 +583,7 @@ int ***backClock(int ***cube)
     return temp;
 }
 
-int ***backAntiClock(int ***cube)
+int ***bA(int ***cube)
 {
     int ***temp;
     temp = new int **[6];
@@ -649,33 +649,33 @@ struct CubieDefinition
 {
     string name;
     bool is_corner;
-    set<int> solved_color_set;
-    Vec3D solved_coord;
-    vector<tuple<int, int, int>> slot_sticker_indices;
+    set<int> colors;
+    Vec3D pos;
+    vector<tuple<int, int, int> > idxs;
 };
 
-vector<CubieDefinition> all_cubie_definitions;
-map<set<int>, Vec3D> solved_color_set_to_solved_coord;
+vector<CubieDefinition> cubies;
+map<set<int>, Vec3D> colorToPos;
 
 int manhattan_distance(const Vec3D &c1, const Vec3D &c2)
 {
     return abs(c1.x - c2.x) + abs(c1.y - c2.y) + abs(c1.z - c2.z);
 }
 
-set<int> get_colors_in_slot(int ***current_state, const vector<tuple<int, int, int>> &sticker_indices)
+set<int> get_colors(int ***state, const vector<tuple<int, int, int> > &idxs)
 {
     set<int> colors;
-    for (const auto &loc : sticker_indices)
+    for (const auto &loc : idxs)
     {
-        colors.insert(current_state[get<0>(loc)][get<1>(loc)][get<2>(loc)]);
+        colors.insert(state[get<0>(loc)][get<1>(loc)][get<2>(loc)]);
     }
     return colors;
 }
 
-void initialize_cubie_definitions_and_map(int ***solved_reference_state)
+void init_cubies(int ***solved)
 {
-    all_cubie_definitions.clear();
-    solved_color_set_to_solved_coord.clear();
+    cubies.clear();
+    colorToPos.clear();
 
     CubieDefinition defs[] = {
         {"UFR", true, {}, {1, 1, 1}, {{0, 2, 2}, {1, 0, 2}, {4, 0, 0}}},
@@ -702,43 +702,43 @@ void initialize_cubie_definitions_and_map(int ***solved_reference_state)
 
     for (CubieDefinition &def : defs)
     {
-        def.solved_color_set = get_colors_in_slot(solved_reference_state, def.slot_sticker_indices);
-        all_cubie_definitions.push_back(def);
-        solved_color_set_to_solved_coord[def.solved_color_set] = def.solved_coord;
+        def.colors = get_colors(solved, def.idxs);
+        cubies.push_back(def);
+        colorToPos[def.colors] = def.pos;
     }
-    cout << "Manhattan heuristic cubie definitions initialized: " << all_cubie_definitions.size() << " cubies." << endl;
+    cout << "Manhattan heuristic cubie definitions initialized: " << cubies.size() << " cubies." << endl;
 }
 
-int heuristic_manhattan_rewards(int ***current_state, int ***final_state_ref_for_init_only_if_needed)
+int heuristic(int ***state, int ***goal)
 {
-    if (all_cubie_definitions.empty())
+    if (cubies.empty())
     {
-        initialize_cubie_definitions_and_map(final_state_ref_for_init_only_if_needed);
+        init_cubies(goal);
     }
 
-    long long sum_corner_manhattan_dist = 0;
-    long long sum_edge_manhattan_dist = 0;
+    long long corner_dist = 0;
+    long long edge_dist = 0;
 
-    for (const auto &cubie_slot_def : all_cubie_definitions)
+    for (const auto &cubie : cubies)
     {
-        set<int> colors_in_current_slot = get_colors_in_slot(current_state, cubie_slot_def.slot_sticker_indices);
-        auto it = solved_color_set_to_solved_coord.find(colors_in_current_slot);
-        if (it != solved_color_set_to_solved_coord.end())
+        set<int> curr_colors = get_colors(state, cubie.idxs);
+        auto it = colorToPos.find(curr_colors);
+        if (it != colorToPos.end())
         {
-            Vec3D piece_home_coord = it->second;
-            Vec3D current_slot_coord = cubie_slot_def.solved_coord;
-            int dist = manhattan_distance(current_slot_coord, piece_home_coord);
-            if (cubie_slot_def.is_corner)
+            Vec3D home = it->second;
+            Vec3D curr = cubie.pos;
+            int dist = manhattan_distance(curr, home);
+            if (cubie.is_corner)
             {
-                sum_corner_manhattan_dist += dist;
+                corner_dist += dist;
             }
             else
             {
-                sum_edge_manhattan_dist += dist;
+                edge_dist += dist;
             }
         }
     }
-    return max(sum_corner_manhattan_dist, sum_edge_manhattan_dist);
+    return max(corner_dist, edge_dist);
 }
 
 int ***getCube()
@@ -788,7 +788,7 @@ public:
         }
     }
 
-    void setCurrState(int ***c)
+    void setCS(int ***c)
     {
         for (int i = 0; i < 6; i++)
         {
@@ -803,73 +803,62 @@ public:
     }
 };
 
-typedef int ***(*MoveFunction)(int ***);
-MoveFunction move_functions[] = {
-    leftClock, leftAntiClock, rightClock, rightAntiClock,
-    upClock, upAntiClock, downClock, downAntiClock,
-    frontClock, frontAntiClock, backClock, backAntiClock};
+typedef int ***(*MF)(int ***);
+MF mf[] = {
+    lC, lA, rC, rA,
+    uC, uA, dC, dA,
+    fC, fA, bC, bA};
 
-int ida_star_search_step(node *current_node, int g_cost, int cost_limit,
-                         int ***final_state, stack<int> &path_so_far, stack<int> &solution_path_ref)
+int ida_star_step(node *cur, int g, int limit, int ***goal, stack<int> &path, stack<int> &sol)
 {
-    int h_cost = heuristic_manhattan_rewards(current_node->curr, final_state);
-    int f_cost = g_cost + h_cost;
+    int h = heuristic(cur->curr, goal);
+    int f = g + h;
 
-    if (f_cost > cost_limit)
+    if (f > limit)
     {
-        return f_cost;
+        return f;
     }
 
-    if (heuristic_manhattan_rewards(current_node->curr, final_state) == 0)
+    if (heuristic(cur->curr, goal) == 0)
     {
-        solution_path_ref = path_so_far;
+        sol = path;
         return 0;
     }
 
-    int min_next_f_cost_candidate = numeric_limits<int>::max();
+    int min_cost = numeric_limits<int>::max();
 
-    for (int move_idx = 0; move_idx < 12; ++move_idx)
+    for (int i = 0; i < 12; ++i)
     {
-        int current_move_id = move_idx + 1;
+        int move = i + 1;
 
-        if (current_node->prevMove != 0)
+        if (cur->prevMove != 0)
         {
-            bool is_inverse_pair = false;
-            if ((current_node->prevMove % 2 == 1 && current_move_id == current_node->prevMove + 1) ||
-                (current_node->prevMove % 2 == 0 && current_move_id == current_node->prevMove - 1))
-            {
-                is_inverse_pair = true;
-            }
-            if (is_inverse_pair)
-            {
+            bool is_inverse = false;
+            if ((cur->prevMove % 2 == 1 && move == cur->prevMove + 1) || (cur->prevMove % 2 == 0 && move == cur->prevMove - 1))
+                is_inverse = true;
+            if (is_inverse)
                 continue;
-            }
         }
 
         node *n = new node();
-        n->curr = move_functions[move_idx](current_node->curr);
-        n->prevMove = current_move_id;
+        n->curr = mf[i](cur->curr);
+        n->prevMove = move;
 
-        path_so_far.push(current_move_id);
-        int r = ida_star_search_step(n, g_cost + 1, cost_limit,
-                                     final_state, path_so_far, solution_path_ref);
-        path_so_far.pop();
+        path.push(move);
+        int r = ida_star_step(n, g + 1, limit, goal, path, sol);
+        path.pop();
 
         delete n;
 
         if (r == 0)
-        {
             return 0;
-        }
-        if (r < min_next_f_cost_candidate)
-        {
-            min_next_f_cost_candidate = r;
-        }
+        if (r < min_cost)
+            min_cost = r;
     }
-    return min_next_f_cost_candidate;
+    return min_cost;
 }
 
-void printSolutionInOrder(stack<int> s)
+void printSolution(stack<int> s)
 {
     if (s.empty())
     {
@@ -886,111 +875,84 @@ void printSolutionInOrder(stack<int> s)
     {
         int p = moves_vec[i];
         if (p == 1)
-        {
             cout << "move Left ClockWise" << endl;
-        }
         else if (p == 2)
-        {
             cout << "move Left AntiClockWise" << endl;
-        }
         else if (p == 3)
-        {
             cout << "move Right ClockWise" << endl;
-        }
         else if (p == 4)
-        {
             cout << "move Right AntiClockWise" << endl;
-        }
         else if (p == 5)
-        {
             cout << "move Up ClockWise" << endl;
-        }
         else if (p == 6)
-        {
             cout << "move Up AntiClockWise" << endl;
-        }
         else if (p == 7)
-        {
             cout << "move Down ClockWise" << endl;
-        }
         else if (p == 8)
-        {
             cout << "move Down AntiClockWise" << endl;
-        }
         else if (p == 9)
-        {
             cout << "move Front ClockWise" << endl;
-        }
         else if (p == 10)
-        {
             cout << "move Front AntiClockWise" << endl;
-        }
         else if (p == 11)
-        {
             cout << "move Back ClockWise" << endl;
-        }
         else if (p == 12)
-        {
             cout << "move Back AntiClockWise" << endl;
-        }
         else
-        {
             cout << "Unknown move: " << p << endl;
-        }
     }
     cout << endl;
 }
 
 int main(int argc, char *argv[])
 {
-    int ***startState = getCube();
-    int ***finalState = getCube();
+    int ***start = getCube();
+    int ***goal = getCube();
 
-    takeInput(startState, finalState, argc, argv);
+    takeInput(start, goal, argc, argv);
 
-    initialize_cubie_definitions_and_map(finalState);
+    init_cubies(goal);
 
-    cout << "Initial state Manhattan heuristic: " << heuristic_manhattan_rewards(startState, finalState) << endl;
+    cout << "Initial state Manhattan heuristic: " << heuristic(start, goal) << endl;
 
-    int cost_limit = heuristic_manhattan_rewards(startState, finalState);
-    stack<int> current_path_moves;
-    stack<int> solution_path;
+    int limit = heuristic(start, goal);
+    stack<int> path;
+    stack<int> sol;
 
-    const int MAX_SOLUTION_DEPTH = 25;
+    const int MAX_DEPTH = 25;
 
     while (true)
     {
-        node *root_search_node = new node();
-        root_search_node->setCurrState(startState);
-        root_search_node->prevMove = 0;
+        node *root = new node();
+        root->setCS(start);
+        root->prevMove = 0;
 
-        cout << "Searching with cost limit (f_max): " << cost_limit << endl;
+        cout << "Searching with cost limit (f_max): " << limit << endl;
 
-        current_path_moves = stack<int>();
-        int next_threshold_candidate = ida_star_search_step(root_search_node, 0, cost_limit,
-                                                            finalState, current_path_moves, solution_path);
+        path = stack<int>();
+        int next = ida_star_step(root, 0, limit, goal, path, sol);
 
-        delete root_search_node;
+        delete root;
 
-        if (next_threshold_candidate == 0)
+        if (next == 0)
         {
             cout << "Found!" << endl;
-            cout << "The depth (number of moves) is: " << solution_path.size() << endl;
-            printSolutionInOrder(solution_path);
+            cout << "The depth (number of moves) is: " << sol.size() << endl;
+            printSolution(sol);
             break;
         }
 
-        if (next_threshold_candidate == numeric_limits<int>::max())
+        if (next == numeric_limits<int>::max())
         {
-            cout << "Not Found (exhausted search space or no solution within limits). Current cost_limit: " << cost_limit << endl;
+            cout << "Not Found (exhausted search space or no solution within limits). Current cost_limit: " << limit << endl;
             break;
         }
 
-        cost_limit = next_threshold_candidate;
+        limit = next;
 
-        if (cost_limit > MAX_SOLUTION_DEPTH * 2)
+        if (limit > MAX_DEPTH * 2)
         {
-            cout << "Search limit exceeded (cost_limit " << cost_limit << " > MAX_SOLUTION_DEPTH " << MAX_SOLUTION_DEPTH << "). Stopping." << endl;
+            cout << "Search limit exceeded (cost_limit " << limit << " > MAX_DEPTH " << MAX_DEPTH << "). Stopping." << endl;
             break;
         }
     }
@@ -999,14 +961,14 @@ int main(int argc, char *argv[])
     {
         for (int j = 0; j < 3; j++)
         {
-            delete[] startState[i][j];
-            delete[] finalState[i][j];
+            delete[] start[i][j];
+            delete[] goal[i][j];
         }
-        delete[] startState[i];
-        delete[] finalState[i];
+        delete[] start[i];
+        delete[] goal[i];
     }
-    delete[] startState;
-    delete[] finalState;
+    delete[] start;
+    delete[] goal;
 
     return 0;
 }

@@ -144,68 +144,67 @@ private:
         return (row_from_bottom % 2 == 1) ? (inversions % 2 == 0) : (inversions % 2 == 1);
     }
 
-    int IDA_dfs(Node &node, int threshold, int &next_threshold, int last_move, unordered_set<string> &visited) const
+    int ida(Node &n, int th, int &nTh, int lm, unordered_set<string> &vis) const
     {
-        int f = node.f(); // Calculate the cost function
-        if (f > threshold)
+        int f = n.f(); // Calculate the cost function
+        if (f > th)
         {
-            next_threshold = min(next_threshold, f); // Update next threshold if necessary
-            return -1;                               // Return -1 to indicate threshold exceeded
+            nTh = min(nTh, f); // Update next threshold if necessary
+            return -1;         // Return -1 to indicate threshold exceeded
         }
 
         // Check if the current node is the goal state
-        if (node.isGoal())
+        if (n.isGoal())
         {
-            cout << "Solved in " << node.getG() << " moves.\n"; // Output the number of moves
-            for (size_t i = 0; i < node.getPath().size(); ++i)
-                cout << "(" << node.getPath()[i].first << "," << node.getPath()[i].second << ") "; // Output the path taken
+            cout << "Solved in " << n.getG() << " moves.\n"; // Output the number of moves
+            for (size_t i = 0; i < n.getPath().size(); ++i)
+                cout << "(" << n.getPath()[i].first << "," << n.getPath()[i].second << ") "; // Output the path taken
             cout << "\n";
-            return node.getG(); // Return the number of moves to goal
+            return n.getG(); // Return the number of moves to goal
         }
 
-        string serialized_board = node.serialize(); // Serialize the current board state
-        if (visited.count(serialized_board))
+        string sb = n.serialize(); // Serialize the current board state
+        if (vis.count(sb))
         {
             return -1; // Return -1 if this state has already been visited
         }
-        visited.insert(serialized_board); // Mark this state as visited
+        vis.insert(sb); // Mark this state as visited
 
         for (int i = 0; i < directions.size(); ++i)
         {
             // Skip the opposite of the last move to prevent reversing
-            if (last_move != -1)
+            if (lm != -1)
             {
-                if ((last_move == 0 && i == 1) || // Up -> skip Down
-                    (last_move == 1 && i == 0) || // Down -> skip Up
-                    (last_move == 2 && i == 3) || // Left -> skip Right
-                    (last_move == 3 && i == 2))
+                if ((lm == 0 && i == 1) || // Up -> skip Down
+                    (lm == 1 && i == 0) || // Down -> skip Up
+                    (lm == 2 && i == 3) || // Left -> skip Right
+                    (lm == 3 && i == 2))
                 {             // Right -> skip Left
                     continue; // Skip this direction
                 }
             }
 
             // Calculate the new position of the zero tile after the move
-            int ni = node.getZeroRow() + directions[i].first;
-            int nj = node.getZeroCol() + directions[i].second;
+            int ni = n.getZeroRow() + directions[i].first;
+            int nj = n.getZeroCol() + directions[i].second;
 
             // Check if the new position is within bounds
             if (ni >= 0 && ni < N && nj >= 0 && nj < N)
             {
-                vector<vector<int> > newBoard = node.getBoard();                        // Create a new board state
-                swap(newBoard[node.getZeroRow()][node.getZeroCol()], newBoard[ni][nj]); // Perform the move
-                vector<pair<int, int> > newPath = node.getPath();                       // Copy the path
-                newPath.emplace_back(ni, nj);                                           // Add the new position to the path
-                Node next(newBoard, node.getG() + 1, newPath, i);                       // Create the next node
-                int result = IDA_dfs(next, threshold, next_threshold, i, visited);      // Recur
+                vector<vector<int> > newBoard = n.getBoard();                        // Create a new board state
+                swap(newBoard[n.getZeroRow()][n.getZeroCol()], newBoard[ni][nj]);    // Perform the move
+                vector<pair<int, int> > newPath = n.getPath();                       // Copy the path
+                newPath.emplace_back(ni, nj);                                       // Add the new position to the path
+                Node next(newBoard, n.getG() + 1, newPath, i);                      // Create the next node
+                int result = ida(next, th, nTh, i, vis);                            // Recur
                 if (result != -1)
                     return result; // Return the result if found
             }
         }
-        visited.erase(serialized_board); // Backtrack: unmark this state
-        return -1;                       // Return -1 if no solution found in this path
+        vis.erase(sb); // Backtrack: unmark this state
+        return -1;     // Return -1 if no solution found in this path
     }
 
-public:
 public:
     FifteenPuzzleSolver()
     {
@@ -229,8 +228,8 @@ public:
 
         while (true)
         {
-            int next_threshold = INT_MAX;                                        // Initialize next threshold
-            int result = IDA_dfs(start, threshold, next_threshold, -1, visited); // Start the search
+            int next_threshold = INT_MAX;                                // Initialize next threshold
+            int result = ida(start, threshold, next_threshold, -1, visited); // Start the search
             if (result != -1)
                 return; // Solution found
             if (next_threshold == INT_MAX)
