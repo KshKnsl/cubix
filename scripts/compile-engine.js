@@ -22,7 +22,7 @@ async function compileEngine() {
 
   for (const { source, output, tempDir } of engines) {
     const outputPath = path.join(tempDir, output); // Avoid appending .exe twice
-    const compileCmd = `g++ "${path.join(process.cwd(), source)}" -o "${outputPath}" -O2`;
+    const compileCmd = `g++ -std=c++11 "${path.join(process.cwd(), source)}" -o "${outputPath}" -O2`;
 
     console.log(`Compiling ${output}...`);
     console.log('Command:', compileCmd);
