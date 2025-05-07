@@ -700,7 +700,7 @@ void initialize_cubie_definitions_and_map(int ***solved_reference_state)
         {"DR", false, {}, {1, -1, 0}, {{5, 1, 2}, {4, 2, 1}}},
     };
 
-    for (auto &def : defs)
+    for (CubieDefinition &def : defs)
     {
         def.solved_color_set = get_colors_in_slot(solved_reference_state, def.slot_sticker_indices);
         all_cubie_definitions.push_back(def);
@@ -846,24 +846,24 @@ int ida_star_search_step(node *current_node, int g_cost, int cost_limit,
             }
         }
 
-        node *next_node = new node();
-        next_node->curr = move_functions[move_idx](current_node->curr);
-        next_node->prevMove = current_move_id;
+        node *n = new node();
+        n->curr = move_functions[move_idx](current_node->curr);
+        n->prevMove = current_move_id;
 
         path_so_far.push(current_move_id);
-        int result = ida_star_search_step(next_node, g_cost + 1, cost_limit,
-                                          final_state, path_so_far, solution_path_ref);
+        int r = ida_star_search_step(n, g_cost + 1, cost_limit,
+                                     final_state, path_so_far, solution_path_ref);
         path_so_far.pop();
 
-        delete next_node;
+        delete n;
 
-        if (result == 0)
+        if (r == 0)
         {
             return 0;
         }
-        if (result < min_next_f_cost_candidate)
+        if (r < min_next_f_cost_candidate)
         {
-            min_next_f_cost_candidate = result;
+            min_next_f_cost_candidate = r;
         }
     }
     return min_next_f_cost_candidate;

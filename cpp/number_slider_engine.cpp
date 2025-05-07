@@ -10,23 +10,23 @@ using namespace std;
 class Node
 {
 private:
-    static const int N = 4;      // Size of the puzzle (4x4)
+    static const int N = 4;       // Size of the puzzle (4x4)
     vector<vector<int> > board;   // Current state of the puzzle board
-    int g;                       // Cost from start (number of moves made)
-    int h;                       // Heuristic estimate (estimated cost to reach goal)
-    int zero_row, zero_col;      // Position of the empty tile (zero)
+    int g;                        // Cost from start (number of moves made)
+    int h;                        // Heuristic estimate (estimated cost to reach goal)
+    int zr, zc;                   // Position of the empty tile (zero)
     vector<pair<int, int> > path; // Move history (positions of the empty tile)
-    int last_move;               // Last move direction index
+    int last_move;                // Last move direction index
 
     // Finds the position of the empty tile (zero) in the board
-    void findZero()
+    void locateZero()
     {
         for (int i = 0; i < N; ++i)
-            for (int j = 0; j < N; ++j)
+            for (int j = 0; j < N; j++)
                 if (board[i][j] == 0)
                 {
-                    zero_row = i;
-                    zero_col = j;
+                    zr = i;
+                    zc = j;
                     return;
                 }
     }
@@ -35,8 +35,8 @@ private:
     // Includes Manhattan distance and linear conflict detection
     int computeHeuristic() const
     {
-        int dist = 0;
-        int conflicts = 0;
+        int d = 0;
+        int c = 0;
 
         // Calculate Manhattan distance
         for (int i = 0; i < N; ++i)
@@ -45,32 +45,14 @@ private:
             {
                 if (board[i][j] != 0)
                 {
-                    int target_row = (board[i][j] - 1) / N;
-                    int target_col = (board[i][j] - 1) % N;
-                    dist += abs(i - target_row) + abs(j - target_col);
+                    int tr = (board[i][j] - 1) / N;
+                    int tc = (board[i][j] - 1) % N;
+                    d += abs(i - tr) + abs(j - tc);
                 }
             }
         }
 
-        // Calculate linear conflicts
-        for (int i = 0; i < N; ++i)
-        {
-            for (int j = 0; j < N; ++j)
-            {
-                if (board[i][j] != 0)
-                {
-                    for (int k = j + 1; k < N; ++k)
-                    {
-                        if (board[i][k] != 0 && board[i][j] > board[i][k])
-                        {
-                            conflicts += 2;
-                        }
-                    }
-                }
-            }
-        }
-
-        return dist + conflicts; // Return total heuristic value
+        return d + c; // Return total heuristic value
     }
 
 public:
@@ -78,7 +60,7 @@ public:
         : board(b), g(g_), path(p), last_move(last_move_)
     {
         h = computeHeuristic(); // Compute heuristic value upon initialization
-        findZero();             // Locate the empty tile
+        locateZero();           // Locate the empty tile
     }
 
     bool isGoal() const
@@ -86,10 +68,15 @@ public:
         int count = 1;
         for (int i = 0; i < N; ++i)
             for (int j = 0; j < N; ++j)
-                if (i == N - 1 && j == N - 1) {
-                    if (board[i][j] != 0) return false; // Last tile must be zero
-                } else {
-                    if (board[i][j] != count++) return false; // Tiles must be in order
+                if (i == N - 1 && j == N - 1)
+                {
+                    if (board[i][j] != 0)
+                        return false; // Last tile must be zero
+                }
+                else
+                {
+                    if (board[i][j] != count++)
+                        return false; // Tiles must be in order
                 }
         return true; // All checks passed, it's the goal state
     }
@@ -102,8 +89,10 @@ public:
     string serialize() const
     {
         string key;
-        for (size_t i = 0; i < board.size(); ++i) {
-            for (size_t j = 0; j < board[i].size(); ++j) {
+        for (size_t i = 0; i < board.size(); ++i)
+        {
+            for (size_t j = 0; j < board[i].size(); ++j)
+            {
                 key += to_string(board[i][j]) + ",";
             }
         }
@@ -111,8 +100,8 @@ public:
     }
 
     const vector<vector<int> > &getBoard() const { return board; }
-    int getZeroRow() const { return zero_row; }
-    int getZeroCol() const { return zero_col; }
+    int getZeroRow() const { return zr; }
+    int getZeroCol() const { return zc; }
     const vector<pair<int, int> > &getPath() const { return path; }
     int getLastMove() const { return last_move; }
     int getG() const { return g; }
@@ -123,17 +112,20 @@ public:
 class FifteenPuzzleSolver
 {
 private:
-    static const int N = 4;                                                       // Size of the puzzle (4x4)
+    static const int N = 4;             // Size of the puzzle (4x4)
     vector<pair<int, int> > directions; // Possible move directions (Up, Down, Left, Right)
-     
+
     bool isSolvable(const vector<vector<int> > &board) const
     {
         vector<int> flat; // Flattened representation of the board
         int zero_row = 0; // Row index of the empty tile
         for (int i = 0; i < N; ++i)
-            for (int j = 0; j < N; ++j) {
-                if (board[i][j] == 0) zero_row = i; // Record the row of zero
-                else flat.push_back(board[i][j]); // Add non-zero tiles to the flat vector
+            for (int j = 0; j < N; ++j)
+            {
+                if (board[i][j] == 0)
+                    zero_row = i; // Record the row of zero
+                else
+                    flat.push_back(board[i][j]); // Add non-zero tiles to the flat vector
             }
 
         int inversions = 0; // Count of inversions
@@ -155,13 +147,15 @@ private:
     int IDA_dfs(Node &node, int threshold, int &next_threshold, int last_move, unordered_set<string> &visited) const
     {
         int f = node.f(); // Calculate the cost function
-        if (f > threshold) {
+        if (f > threshold)
+        {
             next_threshold = min(next_threshold, f); // Update next threshold if necessary
-            return -1; // Return -1 to indicate threshold exceeded
+            return -1;                               // Return -1 to indicate threshold exceeded
         }
 
         // Check if the current node is the goal state
-        if (node.isGoal()) {
+        if (node.isGoal())
+        {
             cout << "Solved in " << node.getG() << " moves.\n"; // Output the number of moves
             for (size_t i = 0; i < node.getPath().size(); ++i)
                 cout << "(" << node.getPath()[i].first << "," << node.getPath()[i].second << ") "; // Output the path taken
@@ -170,18 +164,22 @@ private:
         }
 
         string serialized_board = node.serialize(); // Serialize the current board state
-        if (visited.count(serialized_board)) {
+        if (visited.count(serialized_board))
+        {
             return -1; // Return -1 if this state has already been visited
         }
         visited.insert(serialized_board); // Mark this state as visited
 
-        for (int i = 0; i < directions.size(); ++i) {
+        for (int i = 0; i < directions.size(); ++i)
+        {
             // Skip the opposite of the last move to prevent reversing
-            if (last_move != -1) {
+            if (last_move != -1)
+            {
                 if ((last_move == 0 && i == 1) || // Up -> skip Down
                     (last_move == 1 && i == 0) || // Down -> skip Up
                     (last_move == 2 && i == 3) || // Left -> skip Right
-                    (last_move == 3 && i == 2)) { // Right -> skip Left
+                    (last_move == 3 && i == 2))
+                {             // Right -> skip Left
                     continue; // Skip this direction
                 }
             }
@@ -191,24 +189,26 @@ private:
             int nj = node.getZeroCol() + directions[i].second;
 
             // Check if the new position is within bounds
-            if (ni >= 0 && ni < N && nj >= 0 && nj < N) {
-                vector<vector<int> > newBoard = node.getBoard(); // Create a new board state
+            if (ni >= 0 && ni < N && nj >= 0 && nj < N)
+            {
+                vector<vector<int> > newBoard = node.getBoard();                        // Create a new board state
                 swap(newBoard[node.getZeroRow()][node.getZeroCol()], newBoard[ni][nj]); // Perform the move
-                vector<pair<int, int> > newPath = node.getPath(); // Copy the path
-                newPath.emplace_back(ni, nj); // Add the new position to the path
-                Node next(newBoard, node.getG() + 1, newPath, i); // Create the next node
-                int result = IDA_dfs(next, threshold, next_threshold, i, visited); // Recur
+                vector<pair<int, int> > newPath = node.getPath();                       // Copy the path
+                newPath.emplace_back(ni, nj);                                           // Add the new position to the path
+                Node next(newBoard, node.getG() + 1, newPath, i);                       // Create the next node
+                int result = IDA_dfs(next, threshold, next_threshold, i, visited);      // Recur
                 if (result != -1)
                     return result; // Return the result if found
             }
         }
         visited.erase(serialized_board); // Backtrack: unmark this state
-        return -1; // Return -1 if no solution found in this path
+        return -1;                       // Return -1 if no solution found in this path
     }
 
 public:
 public:
-    FifteenPuzzleSolver() {
+    FifteenPuzzleSolver()
+    {
         // Initialize possible move directions: Up, Down, Left, Right
         directions.push_back(make_pair(-1, 0)); // Up
         directions.push_back(make_pair(1, 0));  // Down
@@ -224,8 +224,8 @@ public:
         }
 
         Node start(board, 0, vector<pair<int, int> >(), -1); // Initialize the starting node
-        int threshold = start.f();     // Set the initial threshold
-        unordered_set<string> visited; // Set to track visited states
+        int threshold = start.f();                           // Set the initial threshold
+        unordered_set<string> visited;                       // Set to track visited states
 
         while (true)
         {
@@ -259,8 +259,10 @@ int main(int argc, char *argv[])
         // Use the default board if no arguments are provided
         int default_board_data[4][4] = {{7, 13, 9, 12}, {8, 14, 5, 11}, {3, 2, 1, 15}, {0, 10, 6, 4}};
         board.resize(4, vector<int>(4));
-        for (int i = 0; i < 4; ++i) {
-            for (int j = 0; j < 4; ++j) {
+        for (int i = 0; i < 4; ++i)
+        {
+            for (int j = 0; j < 4; ++j)
+            {
                 board[i][j] = default_board_data[i][j];
             }
         }
