@@ -1,7 +1,7 @@
 "use client"
 import Link from 'next/link'
 import NumberSlider from "@/components/number-slider"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 import { ThemeToggle } from "@/components/theme-toggle"
 
 export default function SliderPlayPage() {

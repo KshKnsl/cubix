@@ -64,10 +64,68 @@ export default function RubiksCube2D() {
     }
   };
 
+  // Helper function to validate cube state (9 tiles of each color)
+  const validateCubeState = (state) => {
+    // Count occurrences of each color
+    const colorCounts = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
+    
+    // Iterate through the cube state and count each color
+    for (let face = 0; face < 6; face++) {
+      for (let row = 0; row < 3; row++) {
+        for (let col = 0; col < 3; col++) {
+          const color = state[face][row][col];
+          if (color >= 0 && color <= 5) {
+            colorCounts[color]++;
+          } else {
+            return { valid: false, message: `Invalid color value found: ${color}` };
+          }
+        }
+      }
+    }
+    
+    // Check if each color appears exactly 9 times
+    for (let color = 0; color <= 5; color++) {
+      if (colorCounts[color] !== 9) {
+        return { 
+          valid: false, 
+          message: `Invalid configuration: Color ${color} (${COLORS[color].name}) appears ${colorCounts[color]} times. Each color must appear exactly 9 times.`
+        };
+      }
+    }
+    
+    return { valid: true };
+  };
+
   const solveCube = async () => {
     setLoading(true);
     setError(null);
     setSolution("");
+
+    // Validate the start state
+    const startStateValidation = validateCubeState(startState);
+    if (!startStateValidation.valid) {
+      setError(`Initial state error: ${startStateValidation.message}`);
+      toast({
+        variant: "destructive",
+        title: "Invalid Initial State",
+        description: startStateValidation.message,
+      });
+      setLoading(false);
+      return;
+    }
+
+    // Validate the final state
+    const finalStateValidation = validateCubeState(finalState);
+    if (!finalStateValidation.valid) {
+      setError(`Target state error: ${finalStateValidation.message}`);
+      toast({
+        variant: "destructive",
+        title: "Invalid Target State",
+        description: finalStateValidation.message,
+      });
+      setLoading(false);
+      return;
+    }
 
     try {
       const response = await fetch('/api/rubix/execute', {

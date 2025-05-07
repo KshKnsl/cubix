@@ -1,7 +1,7 @@
 "use client"
 import Link from 'next/link'
 import Sudoku from "@/components/sudoku"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 import { ThemeToggle } from "@/components/theme-toggle"
 
 export default function SudokuPlayPage() {

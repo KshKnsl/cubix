@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Grid3x3, Play, Wand2 } from "lucide-react"
+import { Grid3x3, Wand2 } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
 
 export default function SudokuPage() {

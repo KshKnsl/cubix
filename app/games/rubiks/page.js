@@ -2,9 +2,9 @@
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Grid3x3, Play, Wand2 } from "lucide-react"
+import { Grid3x3, Play } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
-import RubiksCube3D from "@/components/rubiks-cube-2d"
+import Image from "next/image"
 
 export default function RubiksPage() {
   return (
@@ -49,7 +49,13 @@ export default function RubiksPage() {
               </ul>
             </div>
             <div className="w-full max-w-sm mx-auto">
-              <RubiksCube3D />
+              <Image
+                className="rounded-lg shadow-lg"
+                src="https://www.picgifs.com/graphics/r/rubiks-cube/animaatjes-rubiks-cube-7217468.gif"
+                alt="Rubik's Cube Animation"
+                width={400}
+                height={400}
+              />
             </div>
           </div>
         </CardContent>
