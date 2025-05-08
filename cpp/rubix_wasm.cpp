@@ -12,27 +12,21 @@
 using namespace std;
 using namespace emscripten;
 
-// Simplified version for WASM with key functionality 
 class RubiksCubeEngine {
 private:
-    // 3D representation of the cube: 6 faces, 3x3 each
     vector<vector<vector<int>>> cube;
     vector<vector<vector<int>>> goal;
     
-    // Move operations (simplified for brevity)
     vector<vector<vector<int>>> rotateRight(const vector<vector<vector<int>>>& state, bool clockwise) {
         auto result = state;
         
-        // Rotate the right face (face 4)
         if (clockwise) {
-            // Rotate the face clockwise
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
                     result[4][i][j] = state[4][2-j][i];
                 }
             }
             
-            // Update adjacent faces
             for (int i = 0; i < 3; i++) {
                 result[0][i][2] = state[3][i][2];
                 result[3][i][2] = state[5][i][2];
@@ -40,14 +34,12 @@ private:
                 result[1][i][2] = state[0][i][2];
             }
         } else {
-            // Rotate face counter-clockwise
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
                     result[4][i][j] = state[4][j][2-i];
                 }
             }
             
-            // Update adjacent faces
             for (int i = 0; i < 3; i++) {
                 result[0][i][2] = state[1][i][2];
                 result[1][i][2] = state[5][i][2];
@@ -62,16 +54,13 @@ private:
     vector<vector<vector<int>>> rotateLeft(const vector<vector<vector<int>>>& state, bool clockwise) {
         auto result = state;
         
-        // Rotate the left face (face 2)
         if (clockwise) {
-            // Rotate the face clockwise
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
                     result[2][i][j] = state[2][2-j][i];
                 }
             }
             
-            // Update adjacent faces
             for (int i = 0; i < 3; i++) {
                 result[0][i][0] = state[1][i][0];
                 result[1][i][0] = state[5][i][0];
@@ -79,14 +68,12 @@ private:
                 result[3][i][0] = state[0][i][0];
             }
         } else {
-            // Rotate face counter-clockwise
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
                     result[2][i][j] = state[2][j][2-i];
                 }
             }
             
-            // Update adjacent faces
             for (int i = 0; i < 3; i++) {
                 result[0][i][0] = state[3][i][0];
                 result[3][i][0] = state[5][i][0];
@@ -101,16 +88,13 @@ private:
     vector<vector<vector<int>>> rotateUp(const vector<vector<vector<int>>>& state, bool clockwise) {
         auto result = state;
         
-        // Rotate the up face (face 0)
         if (clockwise) {
-            // Rotate the face clockwise
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
                     result[0][i][j] = state[0][2-j][i];
                 }
             }
             
-            // Update adjacent faces
             for (int i = 0; i < 3; i++) {
                 result[1][0][i] = state[4][0][i];
                 result[4][0][i] = state[3][0][i];
@@ -118,14 +102,12 @@ private:
                 result[2][0][i] = state[1][0][i];
             }
         } else {
-            // Rotate face counter-clockwise
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
                     result[0][i][j] = state[0][j][2-i];
                 }
             }
             
-            // Update adjacent faces
             for (int i = 0; i < 3; i++) {
                 result[1][0][i] = state[2][0][i];
                 result[2][0][i] = state[3][0][i];
@@ -140,16 +122,13 @@ private:
     vector<vector<vector<int>>> rotateDown(const vector<vector<vector<int>>>& state, bool clockwise) {
         auto result = state;
         
-        // Rotate the down face (face 5)
         if (clockwise) {
-            // Rotate the face clockwise
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
                     result[5][i][j] = state[5][2-j][i];
                 }
             }
             
-            // Update adjacent faces
             for (int i = 0; i < 3; i++) {
                 result[1][2][i] = state[2][2][i];
                 result[2][2][i] = state[3][2][i];
@@ -157,14 +136,12 @@ private:
                 result[4][2][i] = state[1][2][i];
             }
         } else {
-            // Rotate face counter-clockwise
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
                     result[5][i][j] = state[5][j][2-i];
                 }
             }
             
-            // Update adjacent faces
             for (int i = 0; i < 3; i++) {
                 result[1][2][i] = state[4][2][i];
                 result[4][2][i] = state[3][2][i];
@@ -179,16 +156,13 @@ private:
     vector<vector<vector<int>>> rotateFront(const vector<vector<vector<int>>>& state, bool clockwise) {
         auto result = state;
         
-        // Rotate the front face (face 1)
         if (clockwise) {
-            // Rotate the face clockwise
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
                     result[1][i][j] = state[1][2-j][i];
                 }
             }
             
-            // Update adjacent faces
             for (int i = 0; i < 3; i++) {
                 result[0][2][i] = state[2][2-i][2];
                 result[2][i][2] = state[5][0][i];
@@ -196,14 +170,12 @@ private:
                 result[4][i][0] = state[0][2][i];
             }
         } else {
-            // Rotate face counter-clockwise
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
                     result[1][i][j] = state[1][j][2-i];
                 }
             }
             
-            // Update adjacent faces (reverse of clockwise)
             for (int i = 0; i < 3; i++) {
                 result[0][2][i] = state[4][i][0];
                 result[4][i][0] = state[5][0][2-i];
@@ -218,16 +190,13 @@ private:
     vector<vector<vector<int>>> rotateBack(const vector<vector<vector<int>>>& state, bool clockwise) {
         auto result = state;
         
-        // Rotate the back face (face 3)
         if (clockwise) {
-            // Rotate the face clockwise
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
                     result[3][i][j] = state[3][2-j][i];
                 }
             }
             
-            // Update adjacent faces
             for (int i = 0; i < 3; i++) {
                 result[0][0][i] = state[4][i][2];
                 result[4][i][2] = state[5][2][2-i];
@@ -235,14 +204,12 @@ private:
                 result[2][i][0] = state[0][0][2-i];
             }
         } else {
-            // Rotate face counter-clockwise
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
                     result[3][i][j] = state[3][j][2-i];
                 }
             }
             
-            // Update adjacent faces
             for (int i = 0; i < 3; i++) {
                 result[0][0][i] = state[2][2-i][0];
                 result[2][i][0] = state[5][2][i];
@@ -254,10 +221,9 @@ private:
         return result;
     }
     
-    // Helper functions
     bool isSolved() {
         for (int face = 0; face < 6; face++) {
-            int color = cube[face][1][1]; // Center color
+            int color = cube[face][1][1]; 
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
                     if (cube[face][i][j] != color) {
@@ -305,7 +271,6 @@ private:
         }
     }
     
-    // Simple heuristic - count misplaced cubes
     int heuristic() {
         int h = 0;
         for (int face = 0; face < 6; face++) {
@@ -317,7 +282,7 @@ private:
                 }
             }
         }
-        return h / 8; // Normalize to account for multiple faces changing per move
+        return h / 8; 
     }
     
     string idaStar(int maxDepth = 12) {
@@ -327,7 +292,6 @@ private:
         for (int depth = 0; depth <= maxDepth; depth++) {
             int t = search(0, -1, depth, path);
             if (t == 0) {
-                // Solution found
                 stringstream ss;
                 for (int move : path) {
                     ss << moveToString(move) << " ";
@@ -344,43 +308,37 @@ private:
         int f = g + h;
         
         if (f > bound) return f;
-        if (h == 0) return 0; // Found a solution
+        if (h == 0) return 0; 
         
-        int min = numeric_limits<int>::max();
+        int min_val = numeric_limits<int>::max();
         
         for (int move = 0; move < 12; move++) {
-            // Skip redundant moves (same face twice or inverse of previous move)
             if (lastMove != -1) {
-                // Skip move if it's the inverse of the last move
                 if ((lastMove/2 == move/2) && (lastMove%2 != move%2))
                     continue;
                 
-                // Skip move if it's the same face as the last move
                 if ((lastMove/2 == move/2))
                     continue;
             }
             
-            // Apply move
             auto oldCube = cube;
             cube = applyMove(cube, move);
             
             path.push_back(move);
             int t = search(g+1, move, bound, path);
             
-            if (t == 0) return 0; // Solution found
-            if (t < min) min = t;
+            if (t == 0) return 0; 
+            if (t < min_val) min_val = t;
             
-            // Undo move
             path.pop_back();
             cube = oldCube;
         }
         
-        return min;
+        return min_val;
     }
 
 public:
     RubiksCubeEngine() {
-        // Initialize cube with solved state
         cube = vector<vector<vector<int>>>(6, vector<vector<int>>(3, vector<int>(3, 0)));
         for (int face = 0; face < 6; face++) {
             for (int i = 0; i < 3; i++) {
@@ -390,11 +348,53 @@ public:
             }
         }
         
-        goal = cube; // Save solved state
+        goal = cube; 
     }
     
     void setStartState(const vector<int>& flatState) {
         if (flatState.size() != 54) {
+            return; 
+        }
+        
+        int idx = 0;
+        for (int face = 0; face < 6; face++) {
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    cube[face][i][j] = flatState[idx++];
+                }
+            }
+        }
+    }
+    
+    void setGoalState(const vector<int>& flatGoal) {
+        if (flatGoal.size() != 54) {
+            return; 
+        }
+        
+        int idx = 0;
+        for (int face = 0; face < 6; face++) {
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    goal[face][i][j] = flatGoal[idx++];
+                }
+            }
+        }
+    }
+    
+    string solve() {
+        return idaStar();
+    }
+};
+
+EMSCRIPTEN_BINDINGS(rubiks_module) {
+    register_vector<int>("IntVector");
+    
+    class_<RubiksCubeEngine>("RubiksCubeEngine")
+        .constructor<>()
+        .function("setStartState", &RubiksCubeEngine::setStartState)
+        .function("setGoalState", &RubiksCubeEngine::setGoalState)
+        .function("solve", &RubiksCubeEngine::solve);
+}
             return; // Invalid size
         }
         
