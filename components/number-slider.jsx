@@ -37,7 +37,6 @@ export default function NumberSlider() {
   const boardRef = useRef(board)
 
   useEffect(() => {
-    // Initial compilation of the solver when component mounts
     const compileSolver = async () => {
       try {
         await SliderService.compileSolver();
@@ -54,14 +53,12 @@ export default function NumberSlider() {
     currentStepRef.current = currentStep
     boardRef.current = board
     
-    // Check if puzzle is solved
     if (JSON.stringify(board) === JSON.stringify(solvedState)) {
       setIsSolved(true)
     }
   }, [currentStep, board, moveCount])
 
   useEffect(() => {
-    // Update progress based on solution steps
     if (solution.length > 0) {
       setProgress(Math.min(100, Math.round((currentStep / solution.length) * 100)))
     }
@@ -76,10 +73,8 @@ export default function NumberSlider() {
       const { moves } = result;
       console.log("Solve moves:", moves);
       setProgress(80);
-      // Convert moves into coordinate steps. If moves are directions, simulate on a temp board
       let solutionSteps = [];
       if (typeof moves[0] === 'string') {
-        // Direction moves: simulate on a copy of current board to compute coordinates
         let simBoard = board.map(row => [...row]);
         moves.forEach(dir => {
           const [emptyRow, emptyCol] = findEmptyTileInBoard(simBoard);
@@ -91,12 +86,10 @@ export default function NumberSlider() {
             case 'R': row = emptyRow;     col = emptyCol + 1; break;
             default: return;
           }
-          // Apply move in simulation
           simBoard = moveTileInBoard(simBoard, row, col);
           solutionSteps.push({ row, col, display: `(${row + 1},${col + 1})` });
         });
       } else {
-        // Already coordinate moves
         solutionSteps = moves.map(({ row, col }) => ({ row, col, display: `(${row + 1},${col + 1})` }));
       }
       setSolution(solutionSteps);
@@ -126,7 +119,6 @@ export default function NumberSlider() {
   }
 
   const handleShuffle = () => {
-    // Create a random yet solvable board
     const newBoard = generateSolvableBoard();
     setBoard(newBoard);
     boardRef.current = newBoard; // Update boardRef to reflect the shuffled board
@@ -138,7 +130,6 @@ export default function NumberSlider() {
   }
   
   const generateSolvableBoard = () => {
-    // Generate a solvable board by making 100 random valid moves
     let newBoard = [
       [1, 2, 3, 4],
       [5, 6, 7, 8],
@@ -234,11 +225,9 @@ export default function NumberSlider() {
       newBoard = moveTileInBoard(boardRef.current, row, col);
     }
 
-    // Update the board and boardRef
     setBoard(newBoard);
     boardRef.current = newBoard;
 
-    // Increment currentStep
     setCurrentStep((prev) => prev + 1);
     return true;
   };
@@ -252,22 +241,17 @@ export default function NumberSlider() {
 
   const handleStepBack = () => {
     if (currentStep > 0) {
-      // Get the previous step
       const prevStep = solution[currentStep - 1];
       if (!prevStep || typeof prevStep.row === "undefined" || typeof prevStep.col === "undefined") {
         console.error("Invalid step during backward simulation:", prevStep);
         return;
       }
 
-      // Revert the last step
       const { row, col } = prevStep;
       const newBoard = moveTileInBoard(boardRef.current, row, col);
-
-      // Update the board and boardRef
-      setBoard(newBoard);
+    setBoard(newBoard);
       boardRef.current = newBoard;
 
-      // Decrement currentStep
       setCurrentStep((prev) => prev - 1);
     }
   };

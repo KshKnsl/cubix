@@ -255,7 +255,7 @@ public:
     bool isComplete(const std::vector<int>& board) {
         return this->isGoalState(board); // Corrected: Added this->
     }
-}; // End of class NumberSliderEngine
+};
 
 EMSCRIPTEN_BINDINGS(number_slider_module) {
     class_<NumberSliderEngine>("NumberSliderEngine")

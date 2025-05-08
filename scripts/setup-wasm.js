@@ -8,8 +8,6 @@ const root = path.join(__dirname, "..");
 const emsdkPath = path.join(root, "emsdk");
 
 console.log("Setting up WebAssembly environment...");
-
-// Function to execute commands with proper error handling
 function runCommand(command, cwd = root) {
   try {
     console.log(`> ${command}`);
@@ -26,24 +24,23 @@ function runCommand(command, cwd = root) {
   }
 }
 
-// Check if the emsdk directory exists
 if (!fs.existsSync(emsdkPath)) {
   console.error(`Emscripten SDK directory not found at ${emsdkPath}`);
   process.exit(1);
 }
 
-// Activate Emscripten SDK with normalized paths
 console.log("\n---- Activating Emscripten SDK ----");
-// On Unix, ensure the emsdk script is executable
 if (!isWindows) {
-  try { fs.chmodSync(path.join(emsdkPath, "emsdk"), 0o755); } catch {}
+  try {
+    fs.chmodSync(path.join(emsdkPath, "emsdk"), 0o755);
+  } catch {}
 }
 const emsdkBin = isWindows
   ? path.join(emsdkPath, "emsdk.bat")
   : path.join(emsdkPath, "emsdk");
 const activateEmSDK = isWindows
   ? `"${emsdkBin}" install latest && "${emsdkBin}" activate latest`
-  : `bash "${emsdkBin}" install latest && bash "${emsdkBin}" activate latest`;  
+  : `bash "${emsdkBin}" install latest && bash "${emsdkBin}" activate latest`;
 
 if (!runCommand(activateEmSDK)) {
   console.error(
@@ -52,7 +49,6 @@ if (!runCommand(activateEmSDK)) {
   process.exit(1);
 }
 
-// Set Emscripten environment with normalized paths
 console.log("\n---- Setting up Emscripten environment ----");
 const emsdkEnv = isWindows
   ? path.join(emsdkPath, "emsdk_env.bat")
@@ -60,7 +56,6 @@ const emsdkEnv = isWindows
 const setupEnv = isWindows ? `call "${emsdkEnv}"` : `source "${emsdkEnv}"`;
 
 if (isWindows) {
-  // On Windows, we need to create a temporary batch file to source the environment
   const tempBatchFile = path.join(os.tmpdir(), "setup-emscripten.bat");
   fs.writeFileSync(
     tempBatchFile,
@@ -74,10 +69,8 @@ node "${path.join(root, "scripts", "compile-wasm.js")}"
 
   runCommand(`"${tempBatchFile}"`);
 
-  // Clean up the temp file
   fs.unlinkSync(tempBatchFile);
 } else {
-  // On Unix-like systems, we need to use a temporary shell script
   const tempShellFile = path.join(os.tmpdir(), "setup-emscripten.sh");
   fs.writeFileSync(
     tempShellFile,
@@ -88,13 +81,8 @@ node "${path.join(root, "scripts", "compile-wasm.js")}"
 `
   );
 
-  // Make the script executable
   fs.chmodSync(tempShellFile, "755");
-
   runCommand(`"${tempShellFile}"`);
-
-  // Clean up the temp file
   fs.unlinkSync(tempShellFile);
 }
-
 console.log("\nSetup complete! WebAssembly modules should be ready to use.");

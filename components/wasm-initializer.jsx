@@ -5,10 +5,6 @@ import { SudokuService } from '@/lib/services/sudoku-service';
 import { SliderService } from '@/lib/services/slider-service';
 import { RubixService } from '@/lib/services/rubix-service';
 
-/**
- * This component handles the initialization of WebAssembly modules.
- * It ensures that all WASM modules are loaded before users interact with them.
- */
 export default function WasmInitializer() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,7 +14,6 @@ export default function WasmInitializer() {
       try {
         setIsLoading(true);
 
-        // Initialize all WASM modules in parallel
         const initPromises = [
           SudokuService.initSolver(),
           SliderService.initSolver(),
@@ -39,7 +34,5 @@ export default function WasmInitializer() {
     initializeWasm();
   }, []);
 
-  // This component doesn't render anything visible,
-  // just initializes the WebAssembly modules
   return null;
 }

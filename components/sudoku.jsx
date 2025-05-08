@@ -28,7 +28,6 @@ export default function Sudoku() {
     initEngine()
   }, [])
 
-  // Convert 2D board to 1D array
   const boardToArray = () => {
     return board.flat().map(cell => cell === '' ? '0' : cell);
   }
@@ -165,7 +164,6 @@ export default function Sudoku() {
     setBoard(newBoard)
   }
 
-  // Timer effect
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeElapsed(prev => prev + 1)
@@ -173,7 +171,6 @@ export default function Sudoku() {
     return () => clearInterval(timer)
   }, [])
 
-  // Handle keypress event
   useEffect(() => {
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
