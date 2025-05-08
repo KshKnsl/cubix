@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { useToast } from "@/hooks/use-toast"
-import { Toaster } from "@/components/ui/toaster"
 import { Sparkles, RotateCcw, Trophy, Lightbulb } from "lucide-react"
 import { SudokuService } from "@/lib/services/sudoku-service"
 
@@ -17,7 +15,6 @@ export default function Sudoku() {
   const [_1, setMessage] = useState(null)
   const [timeElapsed, setTimeElapsed] = useState(0)
   const [points, setPoints] = useState(100)
-  const { toast } = useToast()
 
   useEffect(() => {
     const initEngine = async () => {
@@ -25,11 +22,7 @@ export default function Sudoku() {
         await SudokuService.compileSolver()
         fetchNewPuzzle()
       } catch (err) {
-        toast({
-          title: "Error",
-          description: 'Failed to initialize Sudoku engine: ' + err.message,
-          variant: "destructive"
-        })
+          console.error(err);
       }
     }
     initEngine()
@@ -52,11 +45,7 @@ export default function Sudoku() {
       setPoints(100)
       setTimeElapsed(0)
     } catch (err) {
-      toast({
-        title: "Error",
-        description: "Failed to fetch new puzzle: " + err.message,
-        variant: "destructive"
-      })
+     console.error(err)
     }
   }
 
@@ -90,19 +79,10 @@ export default function Sudoku() {
         
         if (!isValid) {
           setPoints(prev => Math.max(0, prev - 10))
-          toast({
-            title: "Invalid Move",
-            description: "That number violates Sudoku rules!",
-            variant: "destructive"
-          })
+         
         } else {
           // Check if solved
           if (!boardArray.includes('0')) {
-            toast({
-              title: "Congratulations!",
-              description: "You solved the puzzle!",
-              variant: "default"
-            })
           }
         }
       } catch (err) {
@@ -124,17 +104,9 @@ export default function Sudoku() {
         solutionArray.slice(i * 9, (i + 1) * 9).map(n => n === '0' ? '' : n)
       )
       setBoard(newBoard)
-      toast({
-        title: "Success",
-        description: "Puzzle solved!",
-        variant: "default"
-      })
+      
     } catch (err) {
-      toast({
-        title: "Error",
-        description: 'Failed to solve: ' + err.message,
-        variant: "destructive"
-      })
+      console.error(err)
     } finally {
       setIsSolving(false)
     }
@@ -146,27 +118,12 @@ export default function Sudoku() {
       const result = await SudokuService.checkPuzzle(boardArray);
       const isValid = result.output === 'Valid';
       
-      toast({
-        title: isValid ? "Valid Board" : "Invalid Board",
-        description: isValid ? "Current board configuration is valid!" : "Current board configuration is invalid!",
-        variant: isValid ? "default" : "destructive"
-      })
     } catch (err) {
-      toast({
-        title: "Error",
-        description: 'Failed to check board: ' + err.message,
-        variant: "destructive"
-      })
-    }
+      console.error(err)    }
   }
 
   const handleHint = async () => {
     if (!selectedCell) {
-      toast({
-        title: "Select a Cell",
-        description: "Please select an empty cell first",
-        variant: "default"
-      })
       return
     }
 
@@ -183,28 +140,14 @@ export default function Sudoku() {
         newBoard[selectedCell.row][selectedCell.col] = hint.toString()
         setBoard(newBoard)
         setPoints(prev => Math.max(0, prev - 5))
-        toast({
-          title: "Hint Used",
-          description: `Placed ${hint} in the selected cell`,
-          variant: "default"
-        })
       }
     } catch (err) {
-      toast({
-        title: "Error",
-        description: 'Failed to get hint: ' + err.message,
-        variant: "destructive"
-      })
+      console.error('Error in handleHint:', err)
     }
   }
 
   const handleClear = async () => {
     if (!selectedCell) {
-      toast({
-        title: "Select a Cell",
-        description: "Please select a cell to clear",
-        variant: "default"
-      })
       return
     }
 
@@ -212,11 +155,6 @@ export default function Sudoku() {
     const newBoard = board.map(row => [...row])
     newBoard[row][col] = ''
     setBoard(newBoard)
-    toast({
-      title: "Cell Cleared",
-      description: "The selected cell has been cleared",
-      variant: "default"
-    })
   }
 
   const handleNumberClick = async (number) => {
@@ -339,7 +277,6 @@ export default function Sudoku() {
           </div>
         </div>
       </div>
-      <Toaster />
     </>
   )
 }
