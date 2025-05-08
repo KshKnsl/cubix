@@ -34,14 +34,16 @@ if (!fs.existsSync(emsdkPath)) {
 
 // Activate Emscripten SDK with normalized paths
 console.log("\n---- Activating Emscripten SDK ----");
+// On Unix, ensure the emsdk script is executable
+if (!isWindows) {
+  try { fs.chmodSync(path.join(emsdkPath, "emsdk"), 0o755); } catch {}
+}
 const emsdkBin = isWindows
   ? path.join(emsdkPath, "emsdk.bat")
   : path.join(emsdkPath, "emsdk");
-const activateEmSDK = `${
-  isWindows ? '"' + emsdkBin + '"' : emsdkBin
-} install latest && ${
-  isWindows ? '"' + emsdkBin + '"' : emsdkBin
-} activate latest`;
+const activateEmSDK = isWindows
+  ? `"${emsdkBin}" install latest && "${emsdkBin}" activate latest`
+  : `bash "${emsdkBin}" install latest && bash "${emsdkBin}" activate latest`;  
 
 if (!runCommand(activateEmSDK)) {
   console.error(
