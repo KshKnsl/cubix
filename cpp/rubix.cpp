@@ -816,12 +816,12 @@ int ida_star_step(node *cur, int g, int limit, int ***goal, stack<int> &path, st
 
     if (f > limit)
     {
-        return f;  // Exceeded current threshold, return new candidate threshold
+        return f; // Exceeded current threshold, return new candidate threshold
     }
 
     if (heuristic(cur->curr, goal) == 0)
     {
-        sol = path;  // Solution found, save the path
+        sol = path; // Solution found, save the path
         return 0;
     }
 
@@ -846,7 +846,7 @@ int ida_star_step(node *cur, int g, int limit, int ***goal, stack<int> &path, st
         n->prevMove = move;
 
         path.push(move);
-        int r = ida_star_step(n, g + 1, limit, goal, path, sol);  // Recursive DFS exploration
+        int r = ida_star_step(n, g + 1, limit, goal, path, sol); // Recursive DFS exploration
         path.pop();
 
         delete n;
@@ -856,7 +856,7 @@ int ida_star_step(node *cur, int g, int limit, int ***goal, stack<int> &path, st
         if (r < min_cost)
             min_cost = r;
     }
-    return min_cost;  // Return minimum cost for next threshold
+    return min_cost; // Return minimum cost for next threshold
 }
 
 void printSolution(stack<int> s)
@@ -949,7 +949,7 @@ int main(int argc, char *argv[])
             break;
         }
 
-        limit = next;  // Increase the threshold for next iteration
+        limit = next; // Increase the threshold for next iteration
 
         if (limit > MAX_DEPTH * 2)
         {

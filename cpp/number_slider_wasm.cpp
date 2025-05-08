@@ -244,52 +244,19 @@ public:
     }
 
     std::string getHint(const std::vector<int>& board) {
-        std::string solution = solve(board);
+        std::string solution = this->solve(board); // Corrected: Added this->
         if (solution.empty() || solution.substr(0, 5) == "Error") {
             return solution;
         }
         
-        return solution.substr(0, 1);  
+        return solution.substr(0, 1);
     }
 
     bool isComplete(const std::vector<int>& board) {
-        return isGoalState(board);
+        return this->isGoalState(board); // Corrected: Added this->
     }
-};
+}; // End of class NumberSliderEngine
 
-EMSCRIPTEN_BINDINGS(number_slider_module) {
-    class_<NumberSliderEngine>("NumberSliderEngine")
-        .constructor<>()
-        .function("solve", &NumberSliderEngine::solve)
-        .function("isValidMove", &NumberSliderEngine::isValidMove)
-        .function("applyMove", &NumberSliderEngine::applyMove)
-        .function("getHint", &NumberSliderEngine::getHint)
-        .function("isComplete", &NumberSliderEngine::isComplete);
-            if (i < newBoard.size() - 1) {
-                ss << ",";
-            }
-        }
-        
-        return ss.str();
-    }
-
-    // Get a hint (next optimal move)
-    std::string getHint(const std::vector<int>& board) {
-        std::string solution = solve(board);
-        if (solution.empty() || solution.substr(0, 5) == "Error") {
-            return solution;
-        }
-        
-        return solution.substr(0, 1);  // Return just the first move
-    }
-
-    // Check if the board is in the goal state
-    bool isComplete(const std::vector<int>& board) {
-        return isGoalState(board);
-    }
-};
-
-// Binding code
 EMSCRIPTEN_BINDINGS(number_slider_module) {
     class_<NumberSliderEngine>("NumberSliderEngine")
         .constructor<>()
