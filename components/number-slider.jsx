@@ -71,33 +71,37 @@ export default function NumberSlider() {
     setIsSolving(true);
     setProgress(10);
     try {
-      // Call the SliderService instead of the direct API
       const result = await SliderService.solvePuzzle(board.flat());
       setProgress(50);
-
-      const { output } = result;
-      console.log("Solve output:", output);
+      const { moves } = result;
+      console.log("Solve moves:", moves);
       setProgress(80);
-
-      // Parse steps from output - clean up invalid entries and convert to 1-based index
-      const solutionSteps = output
-        .split(/\s+/) // Split by whitespace
-        .filter((step) => step.match(/^\(\d+,\d+\)$/)) // Keep only valid step format "(row,col)"
-        .map((step) => {
-          const match = step.match(/\((\d+),(\d+)\)/);
-          if (match) {
-            const row = parseInt(match[1], 10) + 1; // Convert to 1-based index
-            const col = parseInt(match[2], 10) + 1; // Convert to 1-based index
-            return { row: parseInt(match[1], 10), col: parseInt(match[2], 10), display: `(${row},${col})` };
+      // Convert moves into coordinate steps. If moves are directions, simulate on a temp board
+      let solutionSteps = [];
+      if (typeof moves[0] === 'string') {
+        // Direction moves: simulate on a copy of current board to compute coordinates
+        let simBoard = board.map(row => [...row]);
+        moves.forEach(dir => {
+          const [emptyRow, emptyCol] = findEmptyTileInBoard(simBoard);
+          let row, col;
+          switch (dir) {
+            case 'U': row = emptyRow - 1; col = emptyCol; break;
+            case 'D': row = emptyRow + 1; col = emptyCol; break;
+            case 'L': row = emptyRow;     col = emptyCol - 1; break;
+            case 'R': row = emptyRow;     col = emptyCol + 1; break;
+            default: return;
           }
-          return step;
+          // Apply move in simulation
+          simBoard = moveTileInBoard(simBoard, row, col);
+          solutionSteps.push({ row, col, display: `(${row + 1},${col + 1})` });
         });
-
-      console.log("Parsed solution steps:", solutionSteps);
-
+      } else {
+        // Already coordinate moves
+        solutionSteps = moves.map(({ row, col }) => ({ row, col, display: `(${row + 1},${col + 1})` }));
+      }
       setSolution(solutionSteps);
-      setCurrentStep(0); // Reset to the first step
-      setIsSolved(false); // Reset solved state
+      setCurrentStep(0);
+      setIsSolved(false);
       setProgress(100);
     } catch (error) {
       console.error("Solve error:", error);
@@ -207,14 +211,28 @@ export default function NumberSlider() {
     if (solution.length === 0 || currentStep >= solution.length) return false;
 
     const step = solution[currentStep];
-    if (!step || typeof step.row === "undefined" || typeof step.col === "undefined") {
+    if (!step || (typeof step.row === "undefined" && typeof step.dir === "undefined")) {
       console.error("Invalid step during forward simulation:", step);
       return false;
     }
 
-    // Apply only the current step to the current board state
-    const { row, col } = step;
-    const newBoard = moveTileInBoard(boardRef.current, row, col);
+    let newBoard;
+    if (step.dir) {
+      // Direction move: move tile in given direction relative to empty
+      const [emptyRow, emptyCol] = findEmptyTileInBoard(boardRef.current);
+      let row, col;
+      switch (step.dir) {
+        case 'U': row = emptyRow - 1; col = emptyCol; break;
+        case 'D': row = emptyRow + 1; col = emptyCol; break;
+        case 'L': row = emptyRow;     col = emptyCol - 1; break;
+        case 'R': row = emptyRow;     col = emptyCol + 1; break;
+        default: return false;
+      }
+      newBoard = moveTileInBoard(boardRef.current, row, col);
+    } else {
+      const { row, col } = step;
+      newBoard = moveTileInBoard(boardRef.current, row, col);
+    }
 
     // Update the board and boardRef
     setBoard(newBoard);
