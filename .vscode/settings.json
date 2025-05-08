@@ -51,7 +51,19 @@
         "thread": "cpp",
         "typeinfo": "cpp",
         "set": "cpp",
-        "__node_handle": "cpp"
+        "__node_handle": "cpp",
+        "__locale": "cpp",
+        "__split_buffer": "cpp",
+        "__tree": "cpp",
+        "__verbose_abort": "cpp",
+        "bitset": "cpp",
+        "cinttypes": "cpp",
+        "complex": "cpp",
+        "cstring": "cpp",
+        "forward_list": "cpp",
+        "optional": "cpp",
+        "string_view": "cpp",
+        "cfenv": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }
